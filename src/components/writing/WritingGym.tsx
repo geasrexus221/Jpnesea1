@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { HIRAGANA_DATA } from '../../data/hiragana';
 import { KATAKANA_DATA } from '../../data/katakana';
 import { KANJI_N5_DATA } from '../../data/kanji_n5';
@@ -8,16 +8,13 @@ import { AudioButton } from '../ui/AudioButton';
 import { StrokeRulesModal } from './StrokeRulesModal';
 import {
   BookOpen,
+  Sparkles,
   ChevronLeft,
   ChevronRight,
   Grid,
   X,
   PenTool,
-  Sliders,
-  RotateCcw,
-  Save,
-  Copy,
-  Check,
+  CheckCircle2,
 } from 'lucide-react';
 import { useSpeech } from '../../hooks/useSpeech';
 
@@ -26,38 +23,8 @@ export const WritingGym: React.FC = () => {
   const [selectedCharIndex, setSelectedCharIndex] = useState<number>(0);
   const [isPickerModalOpen, setIsPickerModalOpen] = useState<boolean>(false);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState<boolean>(false);
-  const [isCalibratorOpen, setIsCalibratorOpen] = useState<boolean>(false);
-
-  // Calibration state (persistent in localStorage)
-  const [charOffsetY, setCharOffsetY] = useState<number>(() => {
-    return Number(localStorage.getItem('nihongo_calib_offset_y') || 0);
-  });
-  const [charOffsetX, setCharOffsetX] = useState<number>(() => {
-    return Number(localStorage.getItem('nihongo_calib_offset_x') || 0);
-  });
-  const [charScale, setCharScale] = useState<number>(() => {
-    return Number(localStorage.getItem('nihongo_calib_scale') || 76);
-  });
-  const [isCopied, setIsCopied] = useState<boolean>(false);
 
   const { speak } = useSpeech();
-
-  // Save calibration changes to localStorage
-  const handleSaveCalibration = () => {
-    localStorage.setItem('nihongo_calib_offset_y', charOffsetY.toString());
-    localStorage.setItem('nihongo_calib_offset_x', charOffsetX.toString());
-    localStorage.setItem('nihongo_calib_scale', charScale.toString());
-    setIsCalibratorOpen(false);
-  };
-
-  const handleResetCalibration = () => {
-    setCharOffsetY(0);
-    setCharOffsetX(0);
-    setCharScale(76);
-    localStorage.removeItem('nihongo_calib_offset_y');
-    localStorage.removeItem('nihongo_calib_offset_x');
-    localStorage.removeItem('nihongo_calib_scale');
-  };
 
   // Current dataset
   const dataset: (KanaItem | KanjiItem)[] =
@@ -101,7 +68,7 @@ export const WritingGym: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-16">
-      {/* Header & Controls */}
+      {/* Header & Rules Button */}
       <div className="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -113,31 +80,14 @@ export const WritingGym: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Calibrate / Adjust Position Button */}
-          <button
-            type="button"
-            onClick={() => setIsCalibratorOpen(!isCalibratorOpen)}
-            className={`px-3 py-2 rounded-2xl font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm ${
-              isCalibratorOpen
-                ? 'bg-slate-900 text-white'
-                : 'bg-stone-100 hover:bg-stone-200 text-slate-700'
-            }`}
-            title="Adjust character position & scale"
-          >
-            <Sliders size={15} />
-            <span>Adjust Alignment</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsRulesModalOpen(true)}
-            className="px-3 py-2 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
-          >
-            <BookOpen size={15} className="text-amber-700" />
-            <span className="hidden sm:inline">6 Stroke Rules</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setIsRulesModalOpen(true)}
+          className="px-4 py-2 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+        >
+          <BookOpen size={15} className="text-amber-700" />
+          <span>The 6 Stroke Rules</span>
+        </button>
       </div>
 
       {/* Script Selector Tabs */}
@@ -161,7 +111,7 @@ export const WritingGym: React.FC = () => {
         ))}
       </div>
 
-      {/* Modern Carousel Controller */}
+      {/* Modern Carousel Controller (Replaces clunky vertical/overflowing lists) */}
       <div className="bg-white p-3 sm:p-4 rounded-3xl border border-stone-200 shadow-sm flex items-center justify-between gap-2 max-w-xl mx-auto">
         <button
           type="button"
@@ -172,7 +122,7 @@ export const WritingGym: React.FC = () => {
           <ChevronLeft size={22} />
         </button>
 
-        {/* Center Current Character Trigger */}
+        {/* Center Current Character Trigger (Click to open grid picker modal) */}
         <button
           type="button"
           onClick={() => setIsPickerModalOpen(true)}
@@ -201,123 +151,6 @@ export const WritingGym: React.FC = () => {
           <ChevronRight size={22} />
         </button>
       </div>
-
-      {/* Live Visual Alignment Calibrator Panel (When toggled open) */}
-      {isCalibratorOpen && (
-        <div className="bg-gradient-to-br from-stone-900 to-slate-900 text-white p-5 rounded-3xl shadow-xl max-w-xl mx-auto space-y-4 animate-fade-in border border-slate-700">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-2">
-              <Sliders size={18} className="text-emerald-400" />
-              <h4 className="text-sm font-bold text-white">Live Alignment Calibrator</h4>
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsCalibratorOpen(false)}
-              className="p-1 rounded-full text-slate-400 hover:text-white"
-            >
-              <X size={16} />
-            </button>
-          </div>
-
-          <p className="text-xs text-slate-300">
-            Nudge the character up, down, or scale it to fit the guides perfectly on your screen.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-            {/* Y Offset */}
-            <div className="bg-slate-800/80 p-3 rounded-2xl space-y-2 border border-slate-700">
-              <div className="flex justify-between font-semibold">
-                <span>Vertical (Y)</span>
-                <span className="text-emerald-400">{charOffsetY}px</span>
-              </div>
-              <div className="flex gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setCharOffsetY((prev) => prev - 2)}
-                  className="flex-1 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold"
-                >
-                  ↑ Up
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCharOffsetY((prev) => prev + 2)}
-                  className="flex-1 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold"
-                >
-                  ↓ Down
-                </button>
-              </div>
-            </div>
-
-            {/* X Offset */}
-            <div className="bg-slate-800/80 p-3 rounded-2xl space-y-2 border border-slate-700">
-              <div className="flex justify-between font-semibold">
-                <span>Horizontal (X)</span>
-                <span className="text-emerald-400">{charOffsetX}px</span>
-              </div>
-              <div className="flex gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setCharOffsetX((prev) => prev - 2)}
-                  className="flex-1 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold"
-                >
-                  ← Left
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCharOffsetX((prev) => prev + 2)}
-                  className="flex-1 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold"
-                >
-                  → Right
-                </button>
-              </div>
-            </div>
-
-            {/* Size Scale */}
-            <div className="bg-slate-800/80 p-3 rounded-2xl space-y-2 border border-slate-700">
-              <div className="flex justify-between font-semibold">
-                <span>Scale Size</span>
-                <span className="text-emerald-400">{charScale}px</span>
-              </div>
-              <div className="flex gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setCharScale((prev) => Math.max(50, prev - 3))}
-                  className="flex-1 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold"
-                >
-                  - Smaller
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCharScale((prev) => Math.min(100, prev + 3))}
-                  className="flex-1 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold"
-                >
-                  + Bigger
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pt-2 border-t border-slate-800">
-            <button
-              type="button"
-              onClick={handleResetCalibration}
-              className="text-xs text-slate-400 hover:text-white flex items-center gap-1"
-            >
-              <RotateCcw size={13} />
-              <span>Reset to Default</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleSaveCalibration}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-sm"
-            >
-              <Save size={14} />
-              <span>Save Alignment</span>
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Main Drawing Pad Card */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200 shadow-sm flex flex-col md:flex-row items-center justify-center gap-8">
@@ -361,14 +194,11 @@ export const WritingGym: React.FC = () => {
           )}
         </div>
 
-        {/* Right Side: The Touch Canvas Pad with Live Calibration parameters */}
+        {/* Right Side: The Touch Canvas Pad with Guidelines & Validation */}
         <div className="flex flex-col items-center">
           <StrokeCanvas
             character={getCharDisplay(currentChar)}
             strokeCount={currentChar.strokeCount}
-            charOffsetY={charOffsetY}
-            charOffsetX={charOffsetX}
-            charScale={charScale}
           />
         </div>
       </div>
