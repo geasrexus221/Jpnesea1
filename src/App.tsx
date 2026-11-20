@@ -6,7 +6,7 @@ import { CurriculumPath } from './components/learn/CurriculumPath';
 import { LessonModal } from './components/learn/LessonModal';
 import { KanaChart } from './components/chart/KanaChart';
 import { WritingGym } from './components/writing/WritingGym';
-import { ConfusingPairs } from './components/drills/ConfusingPairs';
+import { QuizArena } from './components/quiz/QuizArena';
 import { SignsGallery } from './components/reader/SignsGallery';
 import { GradedReader } from './components/reader/GradedReader';
 import { SettingsModal } from './components/settings/SettingsModal';
@@ -39,7 +39,7 @@ export function App() {
 
       {/* Main Responsive Body Container */}
       <div className="flex-1 max-w-7xl w-full mx-auto flex">
-        {/* Desktop Left Sidebar (Visible on screens md and up) */}
+        {/* Desktop Left Sidebar */}
         <DesktopSidebar
           currentTab={currentTab}
           onChangeTab={setCurrentTab}
@@ -65,7 +65,7 @@ export function App() {
           )}
 
           {currentTab === 'drills' && (
-            <ConfusingPairs />
+            <QuizArena />
           )}
 
           {currentTab === 'signs' && (
@@ -78,7 +78,7 @@ export function App() {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation Bar (Visible on screens below md) */}
+      {/* Mobile Bottom Navigation Bar */}
       <BottomNav currentTab={currentTab} onChangeTab={setCurrentTab} />
 
       {/* Active Lesson Modal */}

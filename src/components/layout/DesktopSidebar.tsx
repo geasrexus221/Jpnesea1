@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Grid, Swords, Compass, BookCheck, Sparkles, PenTool } from 'lucide-react';
+import { BookOpen, Grid, Trophy, Compass, BookCheck, Sparkles, PenTool } from 'lucide-react';
 import { TabType } from './BottomNav';
 
 interface DesktopSidebarProps {
@@ -31,14 +31,14 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
     {
       id: 'write' as TabType,
       label: 'Writing Gym (書道)',
-      sublabel: 'Stroke order & recall canvas',
+      sublabel: 'Zen manuscript practice pad',
       icon: PenTool,
     },
     {
       id: 'drills' as TabType,
-      label: 'Confusing Pairs & Drills',
-      sublabel: 'Trap character master',
-      icon: Swords,
+      label: 'Quiz Arena (試験)',
+      sublabel: 'Survival exam & 3 lives challenge',
+      icon: Trophy,
     },
     {
       id: 'signs' as TabType,

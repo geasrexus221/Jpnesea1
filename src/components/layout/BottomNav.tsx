@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Grid, Swords, Compass, BookCheck, PenTool } from 'lucide-react';
+import { BookOpen, Grid, Trophy, Compass, BookCheck, PenTool } from 'lucide-react';
 
 export type TabType = 'learn' | 'chart' | 'write' | 'drills' | 'signs' | 'reader';
 
@@ -13,7 +13,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onChangeTab })
     { id: 'learn' as TabType, label: 'Learn', icon: BookOpen },
     { id: 'chart' as TabType, label: 'Charts', icon: Grid },
     { id: 'write' as TabType, label: 'Write', icon: PenTool },
-    { id: 'drills' as TabType, label: 'Drills', icon: Swords },
+    { id: 'drills' as TabType, label: 'Quiz', icon: Trophy },
     { id: 'signs' as TabType, label: 'Signs', icon: Compass },
     { id: 'reader' as TabType, label: 'Reader', icon: BookCheck },
   ];
