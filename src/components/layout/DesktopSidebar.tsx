@@ -8,6 +8,7 @@ import {
   BookCheck,
   Sparkles,
   PenTool,
+  Swords,
 } from 'lucide-react';
 import { TabType } from './BottomNav';
 
@@ -66,6 +67,12 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
       label: 'Sentence Reader',
       sublabel: 'Furigana toggle reading',
       icon: BookCheck,
+    },
+    {
+      id: 'cards' as TabType,
+      label: 'Duelist Lab (遊戯王)',
+      sublabel: 'OCG card PSCT & grammar',
+      icon: Swords,
     },
   ];
 

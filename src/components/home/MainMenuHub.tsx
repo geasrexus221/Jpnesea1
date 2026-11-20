@@ -9,6 +9,7 @@ import {
   Sparkles,
   Flame,
   ArrowRight,
+  Swords,
 } from 'lucide-react';
 import { TabType } from '../layout/BottomNav';
 
@@ -167,6 +168,40 @@ export const MainMenuHub: React.FC<MainMenuHubProps> = ({
             </button>
           );
         })}
+      </div>
+
+      {/* Featured Duelist Card Lab Entry */}
+      <div className="pt-0.5">
+        <button
+          type="button"
+          onClick={() => onSelectTab('cards')}
+          className="w-full p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-stone-900 via-rose-950 to-amber-950 border border-amber-900/50 text-white shadow-md transition-all active:scale-98 flex items-center justify-between group text-left"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-stone-950 flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform shrink-0">
+              <Swords size={20} />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-japanese text-[10px] text-amber-300 font-semibold">
+                  遊戯王カード研究所
+                </span>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                  NEW
+                </span>
+              </div>
+              <div className="font-bold text-xs sm:text-sm text-white group-hover:text-amber-300 transition-colors">
+                Duelist Card Lab (OCG)
+              </div>
+              <div className="text-[10px] sm:text-[11px] text-stone-300">
+                Decrypt Japanese card effects, PSCT syntax & anime kanji
+              </div>
+            </div>
+          </div>
+          <div className="p-1.5 sm:p-2 rounded-xl bg-white/10 group-hover:bg-white/20 transition-colors shrink-0">
+            <ArrowRight size={15} className="text-amber-300" />
+          </div>
+        </button>
       </div>
     </div>
   );
