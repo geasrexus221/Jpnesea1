@@ -129,8 +129,8 @@ export const STROKE_PATHS_DB: Record<string, StrokeStep[]> = {
 
   // Katakana Essentials
   'ア': [
-    { path: 'M 26 40 L 72 40 L 62 58', start: { x: 26, y: 40 }, direction: 'Horizontal bar right, bend inward' },
-    { path: 'M 48 42 Q 38 66 24 82', start: { x: 48, y: 42 }, direction: 'Curving downward sweep to bottom-left' }
+    { path: 'M 28 32 L 68 32 L 60 52', start: { x: 28, y: 32 }, direction: 'Horizontal, bend inward down-left' },
+    { path: 'M 46 44 Q 38 66 26 78', start: { x: 46, y: 44 }, direction: 'Curving downward sweep to bottom-left' }
   ],
   'イ': [
     { path: 'M 56 22 L 34 56', start: { x: 56, y: 22 }, direction: 'Slanted stroke down-left' },
