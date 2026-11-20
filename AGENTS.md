@@ -53,10 +53,13 @@ The application consists of 9 core interactive modules accessible from `MainMenu
 ### Rule 2: "Clause Breakdown" Tab vs "Full Text & Romaji" Tab
 - **Clause Breakdown Tab (`CardSyntaxViewer.tsx`)**:
   - Displays clauses classified by PSCT roles: `Condition (条件)`, `Cost / Target (コスト・対象)`, `Resolution (効果処理)`, `Turn Limit (ターン制限)`.
+  - **Audio on Click**: Clicking ANY clause square / word box plays audio pronunciation using `speak(part.text)`.
   - Has the **"Separate Words & Particles (助詞分離)"** toggle switch.
-  - When the toggle is **ON**, it dynamically tokenizes phrases into individual words and particles (e.g., separating `墓地の` into `墓地` + `の`, or `自分フィールドに` into `自分` + `フィールド` + `に`) using `splitClauseParts()` in `src/utils/particleSplitter.ts`.
+  - When the toggle is **ON**, it dynamically tokenizes phrases into individual words and particles using greedy longest-match tokenization via `splitClauseParts()` in `src/utils/particleSplitter.ts`.
+  - **Guaranteed Romaji & Furigana**: Every separated word block is resolved through `getWordFuriganaAndRomaji()` or `VOCAB_DICT` + `kanaToRomaji()`. Romaji must **NEVER** duplicate or repeat raw Japanese/Kanji characters!
 - **Full Text & Romaji Tab (`CardInspector.tsx`)**:
   - Always uses `clause.parts` directly as authored in `yugioh_cards.ts`. No splitting!
+  - Clicking any word chunk plays audio pronunciation using `speak(part.text)`.
 
 ### Rule 3: Maintain Compact Mobile-First UI (No Large Banners)
 - **Do NOT restore the large red title banner** at the top of `DuelistLab.tsx`. The user explicitly asked for it to be removed to maximize screen real estate on mobile devices.

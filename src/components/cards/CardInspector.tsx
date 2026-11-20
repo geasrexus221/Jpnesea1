@@ -3,7 +3,7 @@ import { YugiohCard } from '../../types/yugioh';
 import { YUGIOH_CARDS } from '../../data/yugioh_cards';
 import { CardSyntaxViewer } from './CardSyntaxViewer';
 import { CardSelectorModal } from './CardSelectorModal';
-import { VOCAB_DICT } from '../../utils/particleSplitter';
+import { getAutoFurigana } from '../../utils/particleSplitter';
 import {
   Volume2,
   Sparkles,
@@ -30,15 +30,6 @@ export const CardInspector: React.FC = () => {
     navigator.clipboard.writeText(text);
     setCopiedType(type);
     setTimeout(() => setCopiedType(null), 2000);
-  };
-
-  const getAutoFurigana = (text: string): string | undefined => {
-    for (const [key, val] of Object.entries(VOCAB_DICT)) {
-      if (val.furigana && text.includes(key)) {
-        return val.furigana;
-      }
-    }
-    return undefined;
   };
 
   const getCardTypeBadge = (card: YugiohCard) => {

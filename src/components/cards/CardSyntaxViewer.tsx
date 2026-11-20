@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CardClause, ClauseType } from '../../types/yugioh';
 import { Info, Volume2, Split } from 'lucide-react';
 import { useSpeech } from '../../hooks/useSpeech';
-import { splitClauseParts } from '../../utils/particleSplitter';
+import { splitClauseParts, getAutoFurigana } from '../../utils/particleSplitter';
 
 interface CardSyntaxViewerProps {
   clauses: CardClause[];
@@ -150,20 +150,25 @@ export const CardSyntaxViewer: React.FC<CardSyntaxViewerProps> = ({ clauses }) =
                 const partKey = `${cIdx}-${pIdx}`;
                 const isSelected = activePartIndex === partKey;
                 const isParticle = part.role === 'particle';
+                const furigana = part.furigana || getAutoFurigana(part.text);
 
                 return (
                   <button
                     key={partKey}
                     type="button"
-                    onClick={() => setActivePartIndex(isSelected ? null : partKey)}
+                    onClick={() => {
+                      speak(part.text);
+                      setActivePartIndex(isSelected ? null : partKey);
+                    }}
+                    title={`Click to listen to "${part.text}"`}
                     className={`group relative inline-flex flex-col items-center px-1.5 py-0.5 rounded-lg border text-left transition-all active:scale-95 ${getPartColor(
                       part.role
                     )} ${isSelected ? 'ring-2 ring-japan-crimson ring-offset-1' : ''}`}
                   >
                     {/* Furigana Ruby over text (or particle tag) */}
-                    {part.furigana ? (
-                      <span className="text-[9px] text-slate-400 font-japanese leading-none tracking-tight">
-                        {part.furigana}
+                    {furigana ? (
+                      <span className="text-[9px] text-japan-crimson font-japanese leading-none tracking-tight font-medium">
+                        {furigana}
                       </span>
                     ) : isParticle && separateParticles ? (
                       <span className="text-[8px] text-rose-500 font-bold leading-none tracking-tight">
