@@ -4,7 +4,17 @@ import { YugiohTerm } from '../../types/yugioh';
 import { Search, Volume2, BookOpen, Sparkles } from 'lucide-react';
 import { useSpeech } from '../../hooks/useSpeech';
 
-type TermCategory = 'all' | 'particle' | 'action' | 'psct' | 'zone' | 'mechanic';
+type TermCategory =
+  | 'all'
+  | 'type'
+  | 'attribute'
+  | 'property'
+  | 'mechanic'
+  | 'action'
+  | 'psct'
+  | 'combat'
+  | 'zone'
+  | 'particle';
 
 export const TerminologyDictionary: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -13,11 +23,15 @@ export const TerminologyDictionary: React.FC = () => {
 
   const categories = [
     { id: 'all' as TermCategory, label: 'All Terms (全て)' },
-    { id: 'particle' as TermCategory, label: 'Particles (助詞)' },
+    { id: 'type' as TermCategory, label: 'Monster Types (種族)' },
+    { id: 'attribute' as TermCategory, label: 'Attributes (属性)' },
+    { id: 'property' as TermCategory, label: 'Spell / Trap (魔法・罠)' },
+    { id: 'mechanic' as TermCategory, label: 'Subtypes & Summons (分類・召喚)' },
     { id: 'action' as TermCategory, label: 'Actions (動詞)' },
     { id: 'psct' as TermCategory, label: 'PSCT Rules (文法)' },
+    { id: 'combat' as TermCategory, label: 'Combat & Stats (戦闘・値)' },
     { id: 'zone' as TermCategory, label: 'Game Zones (場所)' },
-    { id: 'mechanic' as TermCategory, label: 'Summons & Mechanics (召喚)' },
+    { id: 'particle' as TermCategory, label: 'Particles (助詞)' },
   ];
 
   const filteredTerms = YUGIOH_TERMS.filter((term) => {
@@ -46,6 +60,14 @@ export const TerminologyDictionary: React.FC = () => {
         return 'bg-blue-50 text-blue-700 border-blue-200';
       case 'mechanic':
         return 'bg-purple-50 text-purple-700 border-purple-200';
+      case 'type':
+        return 'bg-teal-50 text-teal-700 border-teal-200';
+      case 'attribute':
+        return 'bg-violet-50 text-violet-700 border-violet-200';
+      case 'property':
+        return 'bg-cyan-50 text-cyan-700 border-cyan-200';
+      case 'combat':
+        return 'bg-red-50 text-red-700 border-red-200';
       default:
         return 'bg-stone-100 text-slate-700 border-stone-200';
     }

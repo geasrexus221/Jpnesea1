@@ -175,11 +175,15 @@ Verify that there are 0 TypeScript errors.
   - `対象として` (Targets at activation) vs `選んで` (Chooses non-targeting at resolution, bypassing target immunity).
   - `使用できない` (Cannot use - burns turn attempt even if activation is negated) vs `発動できない` (Cannot activate - can retry with another copy if activation is negated).
 - **Terminology Categories (`TermCategoryType`)**:
-  - `'particle'` (助詞)
-  - `'action'` (動詞・処理)
-  - `'psct'` (構文規則・タイミング)
-  - `'zone'` (場所・ゾーン)
-  - `'mechanic'` (召喚法・特殊分類: 融合, シンクロ, エクシーズ, リンク, ペンデュラム, チューナー, リバース)
+  - `'type'` (種族: 26 official monster types ending in 族)
+  - `'attribute'` (属性: 7 sacred attributes: 光, 闇, 地, 水, 炎, 風, 神)
+  - `'property'` (魔法・罠分類: 通常魔法/罠, 速攻魔法, 永続魔法/罠, 装備魔法, フィールド魔法, 儀式魔法, カウンター罠)
+  - `'mechanic'` (召喚法・特殊分類: 融合, シンクロ, エクシーズ, リンク, ペンデュラム, チューナー, リバース, 通常, 効果, 特殊召喚, スピリット, ユニオン, デュアル, トークン)
+  - `'action'` (動詞・処理: 特殊召喚する, 破壊する, 除外する, 無効にする, ドローする, リリースする, etc.)
+  - `'psct'` (構文規則・タイミング: コロン, セミコロン, タイミング, ターン1度, 連鎖)
+  - `'combat'` (戦闘・ステータス: 攻撃力, 守備力, レベル/ランク/リンク, 直接攻撃, 戦闘破壊, 効果破壊, 貫通ダメージ, 完全耐性)
+  - `'zone'` (場所・ゾーン: 手札, デッキ, 墓地, フィールド, 除外ゾーン, EXデッキ)
+  - `'particle'` (助詞: 〜を, 〜に, 〜へ, 〜から, 〜まで, 〜として, etc.)
 
 ---
 

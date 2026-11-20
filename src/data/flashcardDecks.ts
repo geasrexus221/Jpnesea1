@@ -130,6 +130,10 @@ const yugiohCards: FlashcardItem[] = YUGIOH_TERMS.map((term) => {
     psct: '構文規則 (PSCT Ruling)',
     zone: '場所 (Zone)',
     mechanic: '特殊召喚 (Mechanic)',
+    type: '種族 (Monster Type)',
+    attribute: '属性 (Attribute)',
+    property: '魔法・罠分類 (Property)',
+    combat: '戦闘・値 (Combat & Stat)',
   };
 
   return {
