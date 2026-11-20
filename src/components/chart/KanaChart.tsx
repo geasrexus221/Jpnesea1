@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { HIRAGANA_DATA } from '../../data/hiragana';
 import { KATAKANA_DATA } from '../../data/katakana';
 import { KanaItem } from '../../types';
 import { AudioButton } from '../ui/AudioButton';
-import { Grid, Sparkles, CheckCircle2, XCircle, RotateCcw, Volume2, ArrowRight } from 'lucide-react';
+import { Grid, Sparkles, CheckCircle2, XCircle, Volume2, ArrowRight } from 'lucide-react';
 import { useSpeech } from '../../hooks/useSpeech';
 import { useHaptics } from '../../hooks/useHaptics';
 
@@ -22,13 +22,14 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
   // Quiz State
   const [quizDirection, setQuizDirection] = useState<QuizDirection>('romaji_to_kana');
   const [targetItem, setTargetItem] = useState<KanaItem | null>(null);
-  const [quizOptions, setQuizOptions] = useState<string[]>([]);
+  const [quizOptionItems, setQuizOptionItems] = useState<KanaItem[]>([]);
   const [currentPromptIsRomaji, setCurrentPromptIsRomaji] = useState<boolean>(true);
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
   const [score, setScore] = useState<number>(0);
   const [totalAnswered, setTotalAnswered] = useState<number>(0);
   const [streak, setStreak] = useState<number>(0);
 
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { speak } = useSpeech();
   const { triggerHaptic } = useHaptics();
 
@@ -69,6 +70,10 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
 
   // Generate a new Chart Quiz question
   const generateQuestion = (type = selectedType, dir = quizDirection) => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
     const pool = type === 'hiragana' ? HIRAGANA_DATA.filter((i) => i.type === 'gojuon') : KATAKANA_DATA;
     const randomItem = pool[Math.floor(Math.random() * pool.length)];
 
@@ -81,34 +86,33 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
 
     setTargetItem(randomItem);
     setCurrentPromptIsRomaji(isRomajiPrompt);
-    setSelectedAnswer(null);
+    setSelectedAnswerId(null);
 
-    // If Romaji prompt, options are 4 Kana characters (e.g. Prompt: "a" -> Options: [あ, い, う, え])
-    // If Kana prompt, options are 4 Romaji strings (e.g. Prompt: "あ" -> Options: [a, i, u, e])
-    const correctAnswer = isRomajiPrompt ? randomItem.char : randomItem.romaji;
+    // Pick 3 random distractors
     const distractors = pool
       .filter((i) => i.id !== randomItem.id)
-      .map((i) => (isRomajiPrompt ? i.char : i.romaji))
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
 
-    setQuizOptions([correctAnswer, ...distractors].sort(() => Math.random() - 0.5));
+    const shuffled = [randomItem, ...distractors].sort(() => Math.random() - 0.5);
+    setQuizOptionItems(shuffled);
   };
 
-  // Initialize question when switching to quiz mode
+  // Initialize question when switching to quiz mode or changing script
   useEffect(() => {
     if (viewMode === 'quiz') {
       generateQuestion(selectedType, quizDirection);
     }
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, [viewMode, selectedType, quizDirection]);
 
-  const handleQuizAnswer = (chosen: string) => {
-    if (!targetItem || selectedAnswer !== null) return;
-    setSelectedAnswer(chosen);
+  const handleQuizAnswer = (item: KanaItem) => {
+    if (!targetItem || selectedAnswerId !== null) return;
+    setSelectedAnswerId(item.id);
 
-    const correctAnswer = currentPromptIsRomaji ? targetItem.char : targetItem.romaji;
-    const isCorrect = chosen === correctAnswer;
-
+    const isCorrect = item.id === targetItem.id;
     setTotalAnswered((prev) => prev + 1);
 
     if (isCorrect) {
@@ -119,12 +123,14 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
     } else {
       triggerHaptic('error');
       setStreak(0);
+      // Play sound of what the user mistakenly clicked so they can hear its real pronunciation!
+      speak(item.char);
     }
 
-    // Auto-advance to next question after 1s
-    setTimeout(() => {
+    // Auto-advance after 2.4s so user has time to learn the revealed spelling, or they can click Next directly
+    timerRef.current = setTimeout(() => {
       generateQuestion(selectedType, quizDirection);
-    }, 1100);
+    }, 2400);
   };
 
   return (
@@ -138,12 +144,12 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
           </div>
           <div>
             <h2 className="text-sm sm:text-base font-bold text-slate-900">
-              {viewMode === 'grid' ? '50-Sounds Master Chart' : 'Kana Recall Quiz'}
+              {viewMode === 'grid' ? '50-Sounds Master Chart' : 'Kana Recognition Quiz'}
             </h2>
             <p className="text-[10px] sm:text-xs text-slate-500">
               {viewMode === 'grid'
                 ? '五十音図 — Tap any character for audio & mnemonics'
-                : 'Test your recognition: Romaji ➔ Kana or Kana ➔ Romaji'}
+                : 'Interactive drill with instant character & spelling reveals'}
             </p>
           </div>
         </div>
@@ -317,7 +323,7 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
       )}
 
       {/* ======================================================== */}
-      {/* MODE B: CHART QUIZ / DRILLS MODE                         */}
+      {/* MODE B: CHART QUIZ WITH PER-ANSWER DUAL SPELLING REVEAL  */}
       {/* ======================================================== */}
       {viewMode === 'quiz' && targetItem && (
         <div className="space-y-4 animate-fade-in max-w-md mx-auto">
@@ -371,7 +377,7 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
           </div>
 
           {/* The Question Prompt Card */}
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200 shadow-sm text-center space-y-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200 shadow-sm text-center space-y-4">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
               {currentPromptIsRomaji
                 ? `Pick the Japanese character for:`
@@ -379,7 +385,7 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
             </span>
 
             {/* Prompt Display */}
-            <div className="inline-flex flex-col items-center justify-center min-w-[130px] min-h-[130px] p-4 rounded-3xl bg-stone-50 border-2 border-stone-200/80 shadow-inner">
+            <div className="inline-flex flex-col items-center justify-center min-w-[120px] min-h-[120px] p-4 rounded-3xl bg-stone-50 border-2 border-stone-200/80 shadow-inner">
               {currentPromptIsRomaji ? (
                 <div className="text-5xl sm:text-6xl font-black uppercase text-japan-crimson tracking-widest">
                   {targetItem.romaji}
@@ -401,58 +407,101 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
               </div>
             </div>
 
-            {/* 4 Answer Choice Buttons */}
-            <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto pt-2">
-              {quizOptions.map((option) => {
-                const isChosen = selectedAnswer === option;
-                const correctAnswer = currentPromptIsRomaji ? targetItem.char : targetItem.romaji;
-                const isCorrect = option === correctAnswer;
-                const hasAnswered = selectedAnswer !== null;
+            {/* 4 Answer Choice Buttons (WITH PER-ANSWER CHARACTER & SPELLING REVEAL) */}
+            <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto pt-1">
+              {quizOptionItems.map((item) => {
+                const isChosen = selectedAnswerId === item.id;
+                const isCorrect = item.id === targetItem.id;
+                const hasAnswered = selectedAnswerId !== null;
 
                 let btnStyle = 'bg-stone-50 hover:bg-stone-100 text-slate-800 border-stone-200';
 
                 if (hasAnswered) {
                   if (isCorrect) {
                     btnStyle =
-                      'bg-emerald-50 text-emerald-800 border-emerald-400 ring-2 ring-emerald-300 shadow-md font-bold';
+                      'bg-emerald-50 text-emerald-950 border-emerald-400 ring-2 ring-emerald-300 shadow-md font-bold';
                   } else if (isChosen) {
                     btnStyle =
-                      'bg-red-50 text-red-800 border-red-400 ring-2 ring-red-300 shadow-md font-bold';
+                      'bg-red-50 text-red-950 border-red-400 ring-2 ring-red-300 shadow-md font-bold';
                   } else {
-                    btnStyle = 'bg-stone-50 text-slate-300 border-stone-100 opacity-40';
+                    btnStyle = 'bg-stone-50/70 text-slate-600 border-stone-200 opacity-80';
                   }
                 }
 
                 return (
                   <button
-                    key={option}
+                    key={item.id}
                     type="button"
                     disabled={hasAnswered}
-                    onClick={() => handleQuizAnswer(option)}
-                    className={`h-16 sm:h-20 rounded-2xl border text-2xl font-bold transition-all duration-150 active:scale-95 flex items-center justify-center relative font-japanese ${btnStyle}`}
+                    onClick={() => handleQuizAnswer(item)}
+                    className={`h-20 sm:h-22 rounded-2xl border transition-all duration-200 active:scale-95 flex flex-col items-center justify-center relative p-2 ${btnStyle}`}
                   >
-                    <span>{option}</span>
+                    {!hasAnswered ? (
+                      /* Before answering: display only prompt-appropriate representation */
+                      <span
+                        className={
+                          currentPromptIsRomaji
+                            ? 'font-japanese text-3xl font-bold'
+                            : 'text-2xl font-black uppercase'
+                        }
+                      >
+                        {currentPromptIsRomaji ? item.char : item.romaji}
+                      </span>
+                    ) : (
+                      /* AFTER ANSWERING: DUAL PER-ANSWER REVEAL! */
+                      <div className="flex flex-col items-center justify-center animate-fade-in">
+                        {/* Japanese Glyph */}
+                        <span className="font-japanese text-2xl sm:text-3xl font-bold leading-tight">
+                          {item.char}
+                        </span>
+                        {/* Latin Spelling Reveal */}
+                        <span
+                          className={`text-xs font-black uppercase tracking-wider mt-0.5 px-2 py-0.2 rounded-full ${
+                            isCorrect
+                              ? 'bg-emerald-200/80 text-emerald-900'
+                              : isChosen
+                              ? 'bg-red-200/80 text-red-900'
+                              : 'bg-stone-200/70 text-slate-600'
+                          }`}
+                        >
+                          {item.romaji}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Status icons */}
                     {hasAnswered && isCorrect && (
-                      <CheckCircle2 size={16} className="absolute right-2 text-emerald-600" />
+                      <CheckCircle2 size={16} className="absolute top-2 right-2 text-emerald-600" />
                     )}
                     {hasAnswered && isChosen && !isCorrect && (
-                      <XCircle size={16} className="absolute right-2 text-red-500" />
+                      <XCircle size={16} className="absolute top-2 right-2 text-red-500" />
                     )}
                   </button>
                 );
               })}
             </div>
 
-            {/* Manual Skip / Next button */}
+            {/* Answer Feedback / Advance Action */}
             <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => generateQuestion(selectedType, quizDirection)}
-                className="text-xs font-semibold text-slate-400 hover:text-slate-700 py-1 transition-colors flex items-center justify-center gap-1 mx-auto"
-              >
-                <span>Skip to Next Question</span>
-                <ArrowRight size={13} />
-              </button>
+              {selectedAnswerId !== null ? (
+                <button
+                  type="button"
+                  onClick={() => generateQuestion(selectedType, quizDirection)}
+                  className="py-2.5 px-6 rounded-2xl bg-japan-crimson hover:bg-red-700 text-white font-bold text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 mx-auto animate-scale-up"
+                >
+                  <span>Next Question</span>
+                  <ArrowRight size={14} />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => generateQuestion(selectedType, quizDirection)}
+                  className="text-xs font-semibold text-slate-400 hover:text-slate-700 py-1 transition-colors flex items-center justify-center gap-1 mx-auto"
+                >
+                  <span>Skip Question</span>
+                  <ArrowRight size={13} />
+                </button>
+              )}
             </div>
           </div>
         </div>
