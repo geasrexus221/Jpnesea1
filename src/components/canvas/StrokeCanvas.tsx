@@ -1,15 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { RotateCcw, Eye, EyeOff, Sparkles, CheckCircle2, AlertCircle, Navigation } from 'lucide-react';
+import { RotateCcw, Eye, EyeOff, Sparkles, CheckCircle2, AlertCircle, Navigation, Sliders } from 'lucide-react';
 import { useHaptics } from '../../hooks/useHaptics';
 import { evaluateStrokeAccuracy, EvaluationResult } from '../../utils/strokeEvaluator';
-import { getCharacterStrokePaths } from '../../data/stroke_paths';
+import { getCharacterStrokePaths, StrokeStep } from '../../data/stroke_paths';
 
 interface StrokeCanvasProps {
   character: string;
   strokeCount?: number;
   className?: string;
   onEvaluationComplete?: (result: EvaluationResult) => void;
+  // Calibration adjustments
+  customStrokes?: StrokeStep[];
+  charOffsetY?: number;
+  charOffsetX?: number;
+  charScale?: number;
 }
 
 export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
@@ -17,6 +22,10 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
   strokeCount = 1,
   className = '',
   onEvaluationComplete,
+  customStrokes,
+  charOffsetY = 0,
+  charOffsetX = 0,
+  charScale = 76,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -26,7 +35,7 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
 
   const { triggerHaptic } = useHaptics();
-  const strokes = getCharacterStrokePaths(character, strokeCount);
+  const strokes = customStrokes || getCharacterStrokePaths(character, strokeCount);
 
   // Auto-clear canvas whenever character changes
   useEffect(() => {
@@ -145,7 +154,6 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
       });
     } else {
       triggerHaptic('error');
-      // If failed, make sure guide and arrows are visible
       setShowGuide(true);
       setShowArrows(true);
     }
@@ -179,28 +187,33 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
           className="absolute inset-0 w-full h-full pointer-events-none z-10"
         >
           <defs>
-            {/* Arrowhead marker pointing exactly in stroke tangent direction */}
+            {/* 
+              Arrowhead marker: 
+              Using markerUnits="userSpaceOnUse" so the arrowhead is FIXED at 5.5px
+              instead of ballooning to 20px like in the screenshot! 
+            */}
             <marker
               id="stroke-arrowhead"
-              markerWidth="7"
-              markerHeight="7"
+              markerUnits="userSpaceOnUse"
+              markerWidth="6"
+              markerHeight="6"
               refX="5"
-              refY="3.5"
+              refY="3"
               orient="auto"
             >
-              <polygon points="0 1, 6 3.5, 0 6" fill="#047857" />
+              <path d="M 0 0.5 L 5.5 3 L 0 5.5 z" fill="#047857" />
             </marker>
           </defs>
 
-          {/* 1. Exactly Centered Ghost Reference Character */}
+          {/* 1. Ghost Reference Character with live offset calibration */}
           {showGuide && (
             <text
-              x="50"
-              y="57"
+              x={50 + charOffsetX}
+              y={54 + charOffsetY}
               textAnchor="middle"
               dominantBaseline="central"
               className="fill-slate-200 font-japanese select-none font-normal"
-              style={{ fontSize: '78px' }}
+              style={{ fontSize: `${charScale}px` }}
             >
               {character}
             </text>
@@ -210,25 +223,25 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
           {showArrows &&
             strokes.map((stroke, idx) => (
               <g key={idx}>
-                {/* Dashed directional vector line ending with an arrowhead */}
+                {/* Dashed directional vector line with sleek arrowhead */}
                 <path
                   d={stroke.path}
                   fill="none"
                   stroke="#10B981"
-                  strokeWidth="2.8"
+                  strokeWidth="2.2"
                   strokeDasharray="4 3"
                   markerEnd="url(#stroke-arrowhead)"
-                  opacity="0.9"
+                  opacity="0.95"
                 />
 
-                {/* Starting badge (Sitting precisely at stroke start point!) */}
+                {/* Numbered Starting badge (Sitting precisely at stroke.start.x, stroke.start.y!) */}
                 <circle
                   cx={stroke.start.x}
                   cy={stroke.start.y}
-                  r="4.8"
+                  r="4.2"
                   fill="#047857"
                   stroke="#FFFFFF"
-                  strokeWidth="1.2"
+                  strokeWidth="1"
                 />
                 <text
                   x={stroke.start.x}
@@ -236,7 +249,7 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill="#FFFFFF"
-                  fontSize="5.5"
+                  fontSize="4.8"
                   fontWeight="bold"
                 >
                   {idx + 1}
@@ -259,7 +272,7 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
         />
       </div>
 
-      {/* Accuracy Feedback Banner (Right or Wrong Notification) */}
+      {/* Accuracy Feedback Banner */}
       {evaluation && (
         <div
           className={`mt-3 w-full p-3 rounded-2xl border text-xs flex items-center justify-between gap-3 animate-fade-in ${
