@@ -3,6 +3,7 @@ import { YugiohCard } from '../../types/yugioh';
 import { YUGIOH_CARDS } from '../../data/yugioh_cards';
 import { CardSyntaxViewer } from './CardSyntaxViewer';
 import { CardSelectorModal } from './CardSelectorModal';
+import { VOCAB_DICT } from '../../utils/particleSplitter';
 import {
   Volume2,
   Sparkles,
@@ -25,13 +26,19 @@ export const CardInspector: React.FC = () => {
 
   const currentCard = YUGIOH_CARDS.find((c) => c.id === selectedCardId) || YUGIOH_CARDS[0];
 
-  const fullRomajiText =
-    currentCard.fullRomaji || currentCard.clauses.map((c) => c.romaji).join(' ');
-
   const handleCopy = (text: string, type: 'jp' | 'romaji') => {
     navigator.clipboard.writeText(text);
     setCopiedType(type);
     setTimeout(() => setCopiedType(null), 2000);
+  };
+
+  const getAutoFurigana = (text: string): string | undefined => {
+    for (const [key, val] of Object.entries(VOCAB_DICT)) {
+      if (val.furigana && text.includes(key)) {
+        return val.furigana;
+      }
+    }
+    return undefined;
   };
 
   const getCardTypeBadge = (card: YugiohCard) => {
@@ -80,7 +87,7 @@ export const CardInspector: React.FC = () => {
         </button>
       </div>
 
-      {/* Selected Card Header Plate (Compact height) */}
+      {/* Selected Card Header Plate */}
       <div className="p-3 sm:p-3.5 rounded-xl bg-gradient-to-br from-stone-900 to-slate-800 text-white shadow-sm relative overflow-hidden">
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="space-y-0.5">
@@ -171,7 +178,7 @@ export const CardInspector: React.FC = () => {
       {/* VIEW 1: CLAUSE BREAKDOWN */}
       {activeView === 'breakdown' && (
         <div className="space-y-2.5 animate-fade-in">
-          {/* PSCT Color Legend (Compact) */}
+          {/* PSCT Color Legend */}
           <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-xl bg-white border border-stone-200/80 text-[10px]">
             <span className="font-bold text-slate-500 mr-0.5">PSCT:</span>
             <span className="flex items-center gap-1 text-blue-700 bg-blue-50 px-1.5 py-0.2 rounded-md font-semibold">
@@ -193,83 +200,103 @@ export const CardInspector: React.FC = () => {
         </div>
       )}
 
-      {/* VIEW 2: FULL TEXT & ROMAJI */}
+      {/* VIEW 2: COMBINED FULL TEXT & ROMAJI (Interlinear reading mode: Furigana above, Combined Text in middle, Romaji directly below) */}
       {activeView === 'fulltext' && (
         <div className="space-y-2.5 animate-fade-in">
-          {/* 1. Japanese Full Text Block */}
-          <div className="p-3 sm:p-3.5 rounded-xl bg-white border border-stone-200/90 shadow-2xs space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-japan-crimson" />
-                Japanese Full Text (公式全文)
+          {/* Controls Bar */}
+          <div className="flex items-center justify-between p-2 sm:p-2.5 rounded-xl bg-white border border-stone-200/90 shadow-2xs">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-japan-crimson" />
+              <span className="text-xs font-bold text-slate-900">
+                Combined Reading (ルビ・本文・ローマ字)
               </span>
-
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => speak(currentCard.fullJapanese)}
-                  className="px-2 py-1 rounded-md text-slate-500 hover:text-japan-crimson hover:bg-red-50 transition-colors text-[10px] font-medium flex items-center gap-1"
-                  title="Listen to full text"
-                >
-                  <Volume2 size={13} />
-                  <span>Listen</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleCopy(currentCard.fullJapanese, 'jp')}
-                  className="px-2 py-1 rounded-md text-slate-500 hover:text-slate-800 hover:bg-stone-100 transition-colors text-[10px] font-medium flex items-center gap-1"
-                  title="Copy Japanese text"
-                >
-                  {copiedType === 'jp' ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
-                  <span>{copiedType === 'jp' ? 'Copied' : 'Copy'}</span>
-                </button>
-              </div>
             </div>
 
-            <p className="font-japanese text-sm sm:text-base leading-relaxed text-slate-900 bg-stone-50/70 p-2.5 rounded-lg border border-stone-200/70">
-              {currentCard.fullJapanese}
-            </p>
-          </div>
-
-          {/* 2. Full Continuous Romaji Block */}
-          <div className="p-3 sm:p-3.5 rounded-xl bg-white border border-stone-200/90 shadow-2xs space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-700 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                Full Romaji Reading (ローマ字読み)
-              </span>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => speak(currentCard.fullJapanese)}
+                className="px-2 py-1 rounded-md text-slate-600 hover:text-japan-crimson hover:bg-red-50 transition-colors text-[11px] font-medium flex items-center gap-1"
+                title="Listen to full card text"
+              >
+                <Volume2 size={13} />
+                <span>Listen</span>
+              </button>
 
               <button
                 type="button"
-                onClick={() => handleCopy(fullRomajiText, 'romaji')}
-                className="px-2 py-1 rounded-md text-slate-500 hover:text-slate-800 hover:bg-stone-100 transition-colors text-[10px] font-medium flex items-center gap-1"
-                title="Copy Romaji"
+                onClick={() => handleCopy(currentCard.fullJapanese, 'jp')}
+                className="px-2 py-1 rounded-md text-slate-600 hover:text-slate-900 hover:bg-stone-100 transition-colors text-[11px] font-medium flex items-center gap-1"
+                title="Copy Japanese text"
               >
-                {copiedType === 'romaji' ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
-                <span>{copiedType === 'romaji' ? 'Copied' : 'Copy'}</span>
+                {copiedType === 'jp' ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
+                <span>{copiedType === 'jp' ? 'Copied' : 'Copy'}</span>
               </button>
             </div>
-
-            <p className="font-mono text-xs sm:text-xs leading-relaxed text-slate-700 bg-indigo-50/40 p-2.5 rounded-lg border border-indigo-100/70">
-              {fullRomajiText}
-            </p>
           </div>
 
-          {/* 3. Official English Translation Block */}
-          <div className="p-3 sm:p-3.5 rounded-xl bg-white border border-stone-200/90 shadow-2xs space-y-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+          {/* Combined Interlinear Text Cards: Top Furigana, Middle Combined Text, Bottom Romaji */}
+          <div className="p-3 sm:p-4 rounded-xl bg-white border border-stone-200/90 shadow-2xs space-y-3">
+            {currentCard.clauses.map((clause, cIdx) => (
+              <div key={clause.id || cIdx} className="space-y-1">
+                <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-3 p-2.5 sm:p-3 rounded-lg bg-stone-50/70 border border-stone-200/60 leading-normal">
+                  {clause.parts.map((part, pIdx) => {
+                    const furiganaText = part.furigana || getAutoFurigana(part.text);
+
+                    return (
+                      <div
+                        key={pIdx}
+                        onClick={() => speak(part.text)}
+                        className="inline-flex flex-col items-center text-center cursor-pointer group hover:bg-white px-1.5 py-0.5 rounded-md transition-colors"
+                        title={`Listen to "${part.text}"`}
+                      >
+                        {/* Furigana on top if there is kanji */}
+                        {furiganaText ? (
+                          <span className="text-[10px] text-japan-crimson font-japanese font-semibold leading-tight">
+                            {furiganaText}
+                          </span>
+                        ) : (
+                          <span className="text-[10px] leading-tight select-none opacity-0">
+                            -
+                          </span>
+                        )}
+
+                        {/* Combined Japanese Text in middle (e.g. 墓地の, モンスター１体を) - NOT separated! */}
+                        <span className="font-japanese text-base sm:text-lg font-bold text-slate-900 leading-snug group-hover:text-japan-crimson transition-colors">
+                          {part.text}
+                        </span>
+
+                        {/* Romaji directly on bottom (e.g. bochi no, monsutā ittai o) */}
+                        <span className="font-sans text-[11px] text-indigo-600 font-medium tracking-tight leading-tight">
+                          {part.romaji}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* English meaning of this sentence clause */}
+                <div className="text-[11px] text-slate-600 font-medium px-2 py-0.5">
+                  👉 {clause.english}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Official English Effect Card */}
+          <div className="p-3 rounded-xl bg-white border border-stone-200/90 shadow-2xs space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              English Game Effect (英語翻訳)
+              Official English Effect (公式英語効果)
             </span>
-            <p className="text-xs sm:text-xs leading-relaxed text-slate-800 bg-emerald-50/30 p-2.5 rounded-lg border border-emerald-100/70 font-medium">
+            <p className="text-xs leading-relaxed text-slate-800 bg-emerald-50/30 p-2.5 rounded-lg border border-emerald-100/70 font-medium">
               {currentCard.englishEffect}
             </p>
           </div>
         </div>
       )}
 
-      {/* Grammar & Kanji Highlights (Compact) */}
+      {/* Grammar & Kanji Highlights */}
       <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-200/80 space-y-2">
         <h3 className="text-[11px] font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
           <Sparkles size={13} className="text-amber-600" />
