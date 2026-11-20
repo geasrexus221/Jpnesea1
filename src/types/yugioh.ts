@@ -39,6 +39,7 @@ export interface YugiohCard {
   attribute?: 'LIGHT' | 'DARK' | 'WATER' | 'FIRE' | 'EARTH' | 'WIND';
   typeOrProperty: string; // e.g. "通常魔法", "速攻魔法", "アンデット族 / チューナー / 効果"
   levelOrRank?: number;
+  linkRating?: number;
   atk?: number;
   def?: number;
   fullJapanese: string;

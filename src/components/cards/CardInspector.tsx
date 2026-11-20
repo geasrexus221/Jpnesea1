@@ -18,6 +18,9 @@ export const CardInspector: React.FC = () => {
       case 'trap':
         return 'bg-pink-600 text-white';
       case 'monster':
+        if (card.subtype === 'synchro') return 'bg-slate-100 text-slate-900 border border-slate-300';
+        if (card.subtype === 'xyz') return 'bg-stone-900 text-amber-300 border border-stone-700';
+        if (card.subtype === 'link') return 'bg-blue-600 text-white';
         return card.subtype === 'normal' ? 'bg-amber-500 text-white' : 'bg-orange-600 text-white';
     }
   };
@@ -94,10 +97,14 @@ export const CardInspector: React.FC = () => {
           {currentCard.cardType === 'monster' && currentCard.atk !== undefined && (
             <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 pt-2 sm:pt-0 border-white/10">
               <div className="text-[11px] text-slate-300">
-                ★ Level {currentCard.levelOrRank}
+                {currentCard.subtype === 'link'
+                  ? `LINK-${currentCard.linkRating}`
+                  : currentCard.subtype === 'xyz'
+                  ? `◆ Rank ${currentCard.levelOrRank}`
+                  : `★ Level ${currentCard.levelOrRank}`}
               </div>
               <div className="font-mono font-bold text-sm sm:text-base text-amber-400">
-                ATK/{currentCard.atk} DEF/{currentCard.def}
+                ATK/{currentCard.atk} {currentCard.def !== undefined ? `DEF/${currentCard.def}` : ''}
               </div>
             </div>
           )}
