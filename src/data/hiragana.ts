@@ -482,32 +482,34 @@ export const HIRAGANA_DATA: KanaItem[] = [
   },
 
   // Dakuten (G, Z, D, B)
-  { id: 'h_ga', char: 'が', romaji: 'ga', type: 'dakuten', row: 'ka', mnemonic: 'Ka with two little voiced marks.', strokeCount: 5, exampleWord: { japanese: 'がっこう', reading: 'gakkou', english: 'school' } },
-  { id: 'h_gi', char: 'ぎ', romaji: 'gi', type: 'dakuten', row: 'ka', mnemonic: 'Ki voiced with ten-ten.', strokeCount: 6, exampleWord: { japanese: 'ぎんこう', reading: 'ginkou', english: 'bank' } },
-  { id: 'h_gu', char: 'ぐ', romaji: 'gu', type: 'dakuten', row: 'ka', mnemonic: 'Ku voiced with ten-ten.', strokeCount: 3, exampleWord: { japanese: 'ぐあい', reading: 'guai', english: 'condition' } },
-  { id: 'h_ge', char: 'げ', romaji: 'ge', type: 'dakuten', row: 'ka', mnemonic: 'Ke voiced with ten-ten.', strokeCount: 5, exampleWord: { japanese: 'げんき', reading: 'genki', english: 'energetic' } },
-  { id: 'h_go', char: 'ご', romaji: 'go', type: 'dakuten', row: 'ka', mnemonic: 'Ko voiced with ten-ten.', strokeCount: 4, exampleWord: { japanese: 'ごはん', reading: 'gohan', english: 'rice / meal' } },
+  { id: 'h_ga', char: 'が', romaji: 'ga', type: 'dakuten', row: 'ga', mnemonic: 'Ka with two little voiced marks.', strokeCount: 5, exampleWord: { japanese: 'がっこう', reading: 'gakkou', english: 'school' } },
+  { id: 'h_gi', char: 'ぎ', romaji: 'gi', type: 'dakuten', row: 'ga', mnemonic: 'Ki voiced with ten-ten.', strokeCount: 6, exampleWord: { japanese: 'ぎんこう', reading: 'ginkou', english: 'bank' } },
+  { id: 'h_gu', char: 'ぐ', romaji: 'gu', type: 'dakuten', row: 'ga', mnemonic: 'Ku voiced with ten-ten.', strokeCount: 3, exampleWord: { japanese: 'ぐあい', reading: 'guai', english: 'condition' } },
+  { id: 'h_ge', char: 'げ', romaji: 'ge', type: 'dakuten', row: 'ga', mnemonic: 'Ke voiced with ten-ten.', strokeCount: 5, exampleWord: { japanese: 'げんき', reading: 'genki', english: 'energetic' } },
+  { id: 'h_go', char: 'ご', romaji: 'go', type: 'dakuten', row: 'ga', mnemonic: 'Ko voiced with ten-ten.', strokeCount: 4, exampleWord: { japanese: 'ごはん', reading: 'gohan', english: 'rice / meal' } },
 
-  { id: 'h_za', char: 'ざ', romaji: 'za', type: 'dakuten', row: 'sa', mnemonic: 'Sa voiced with ten-ten.', strokeCount: 5, exampleWord: { japanese: 'ざっし', reading: 'zasshi', english: 'magazine' } },
-  { id: 'h_ji', char: 'じ', romaji: 'ji', type: 'dakuten', row: 'sa', mnemonic: 'Shi voiced with ten-ten.', strokeCount: 3, exampleWord: { japanese: 'じかん', reading: 'jikan', english: 'time' } },
-  { id: 'h_zu', char: 'ず', romaji: 'zu', type: 'dakuten', row: 'sa', mnemonic: 'Su voiced with ten-ten.', strokeCount: 4, exampleWord: { japanese: 'ちず', reading: 'chizu', english: 'map' } },
-  { id: 'h_ze', char: 'ぜ', romaji: 'ze', type: 'dakuten', row: 'sa', mnemonic: 'Se voiced with ten-ten.', strokeCount: 5, exampleWord: { japanese: 'ぜんぶ', reading: 'zenbu', english: 'everything' } },
-  { id: 'h_zo', char: 'ぞ', romaji: 'zo', type: 'dakuten', row: 'sa', mnemonic: 'So voiced with ten-ten.', strokeCount: 3, exampleWord: { japanese: 'かぞく', reading: 'kazoku', english: 'family' } },
+  { id: 'h_za', char: 'ざ', romaji: 'za', type: 'dakuten', row: 'za', mnemonic: 'Sa voiced with ten-ten.', strokeCount: 5, exampleWord: { japanese: 'ざっし', reading: 'zasshi', english: 'magazine' } },
+  { id: 'h_ji', char: 'じ', romaji: 'ji', type: 'dakuten', row: 'za', mnemonic: 'Shi voiced with ten-ten.', strokeCount: 3, exampleWord: { japanese: 'じかん', reading: 'jikan', english: 'time' } },
+  { id: 'h_zu', char: 'ず', romaji: 'zu', type: 'dakuten', row: 'za', mnemonic: 'Su voiced with ten-ten.', strokeCount: 4, exampleWord: { japanese: 'ちず', reading: 'chizu', english: 'map' } },
+  { id: 'h_ze', char: 'ぜ', romaji: 'ze', type: 'dakuten', row: 'za', mnemonic: 'Se voiced with ten-ten.', strokeCount: 5, exampleWord: { japanese: 'ぜんぶ', reading: 'zenbu', english: 'everything' } },
+  { id: 'h_zo', char: 'ぞ', romaji: 'zo', type: 'dakuten', row: 'za', mnemonic: 'So voiced with ten-ten.', strokeCount: 3, exampleWord: { japanese: 'かぞく', reading: 'kazoku', english: 'family' } },
 
-  { id: 'h_da', char: 'だ', romaji: 'da', type: 'dakuten', row: 'ta', mnemonic: 'Ta voiced with ten-ten.', strokeCount: 6, exampleWord: { japanese: 'だいがく', reading: 'daigaku', english: 'university' } },
-  { id: 'h_de', char: 'で', romaji: 'de', type: 'dakuten', row: 'ta', mnemonic: 'Te voiced with ten-ten.', strokeCount: 3, exampleWord: { japanese: 'でんしゃ', reading: 'densha', english: 'train' } },
-  { id: 'h_do', char: 'ど', romaji: 'do', type: 'dakuten', row: 'ta', mnemonic: 'To voiced with ten-ten.', strokeCount: 4, exampleWord: { japanese: 'どこ', reading: 'doko', english: 'where' } },
+  { id: 'h_da', char: 'だ', romaji: 'da', type: 'dakuten', row: 'da', mnemonic: 'Ta voiced with ten-ten.', strokeCount: 6, exampleWord: { japanese: 'だいがく', reading: 'daigaku', english: 'university' } },
+  { id: 'h_dji', char: 'ぢ', romaji: 'ji', type: 'dakuten', row: 'da', mnemonic: 'Chi voiced with ten-ten.', strokeCount: 4, exampleWord: { japanese: 'はなぢ', reading: 'hanaji', english: 'nosebleed' } },
+  { id: 'h_dzu', char: 'づ', romaji: 'zu', type: 'dakuten', row: 'da', mnemonic: 'Tsu voiced with ten-ten.', strokeCount: 3, exampleWord: { japanese: 'つづく', reading: 'tsuzuku', english: 'to continue' } },
+  { id: 'h_de', char: 'で', romaji: 'de', type: 'dakuten', row: 'da', mnemonic: 'Te voiced with ten-ten.', strokeCount: 3, exampleWord: { japanese: 'でんしゃ', reading: 'densha', english: 'train' } },
+  { id: 'h_do', char: 'ど', romaji: 'do', type: 'dakuten', row: 'da', mnemonic: 'To voiced with ten-ten.', strokeCount: 4, exampleWord: { japanese: 'どこ', reading: 'doko', english: 'where' } },
 
-  { id: 'h_ba', char: 'ば', romaji: 'ba', type: 'dakuten', row: 'ha', mnemonic: 'Ha voiced with ten-ten.', strokeCount: 5, exampleWord: { japanese: 'ばんごう', reading: 'bangou', english: 'number' } },
-  { id: 'h_bi', char: 'び', romaji: 'bi', type: 'dakuten', row: 'ha', mnemonic: 'Hi voiced with ten-ten.', strokeCount: 3, exampleWord: { japanese: 'びょういん', reading: 'byouin', english: 'hospital' } },
-  { id: 'h_bu', char: 'ぶ', romaji: 'bu', type: 'dakuten', row: 'ha', mnemonic: 'Fu voiced with ten-ten.', strokeCount: 6, exampleWord: { japanese: 'ぶんか', reading: 'bunka', english: 'culture' } },
-  { id: 'h_be', char: 'べ', romaji: 'be', type: 'dakuten', row: 'ha', mnemonic: 'He voiced with ten-ten.', strokeCount: 3, exampleWord: { japanese: 'べんきょう', reading: 'benkyou', english: 'study' } },
-  { id: 'h_bo', char: 'ぼ', romaji: 'bo', type: 'dakuten', row: 'ha', mnemonic: 'Ho voiced with ten-ten.', strokeCount: 6, exampleWord: { japanese: 'ぼうし', reading: 'boushi', english: 'hat' } },
+  { id: 'h_ba', char: 'ば', romaji: 'ba', type: 'dakuten', row: 'ba', mnemonic: 'Ha voiced with ten-ten.', strokeCount: 5, exampleWord: { japanese: 'ばんごう', reading: 'bangou', english: 'number' } },
+  { id: 'h_bi', char: 'び', romaji: 'bi', type: 'dakuten', row: 'ba', mnemonic: 'Hi voiced with ten-ten.', strokeCount: 3, exampleWord: { japanese: 'びょういん', reading: 'byouin', english: 'hospital' } },
+  { id: 'h_bu', char: 'ぶ', romaji: 'bu', type: 'dakuten', row: 'ba', mnemonic: 'Fu voiced with ten-ten.', strokeCount: 6, exampleWord: { japanese: 'ぶんか', reading: 'bunka', english: 'culture' } },
+  { id: 'h_be', char: 'べ', romaji: 'be', type: 'dakuten', row: 'ba', mnemonic: 'He voiced with ten-ten.', strokeCount: 3, exampleWord: { japanese: 'べんきょう', reading: 'benkyou', english: 'study' } },
+  { id: 'h_bo', char: 'ぼ', romaji: 'bo', type: 'dakuten', row: 'ba', mnemonic: 'Ho voiced with ten-ten.', strokeCount: 6, exampleWord: { japanese: 'ぼうし', reading: 'boushi', english: 'hat' } },
 
   // Handakuten (P)
-  { id: 'h_pa', char: 'ぱ', romaji: 'pa', type: 'handakuten', row: 'ha', mnemonic: 'Ha with a little pop circle.', strokeCount: 4, exampleWord: { japanese: 'パン', reading: 'pan', english: 'bread' } },
-  { id: 'h_pi', char: 'ぴ', romaji: 'ぴ', type: 'handakuten', row: 'ha', mnemonic: 'Hi with a little pop circle.', strokeCount: 2, exampleWord: { japanese: 'ぴかぴか', reading: 'pikapika', english: 'sparkling' } },
-  { id: 'h_pu', char: 'ぷ', romaji: 'pu', type: 'handakuten', row: 'ha', mnemonic: 'Fu with a little pop circle.', strokeCount: 5, exampleWord: { japanese: 'ぷるぷる', reading: 'purupuru', english: 'jiggly' } },
-  { id: 'h_pe', char: 'ぺ', romaji: 'pe', type: 'handakuten', row: 'ha', mnemonic: 'He with a little pop circle.', strokeCount: 2, exampleWord: { japanese: 'ぺこぺこ', reading: 'pekopeko', english: 'hungry' } },
-  { id: 'h_po', char: 'ぽ', romaji: 'po', type: 'handakuten', row: 'ha', mnemonic: 'Ho with a little pop circle.', strokeCount: 5, exampleWord: { japanese: 'ぽかぽか', reading: 'pokapoka', english: 'warm and pleasant' } }
+  { id: 'h_pa', char: 'ぱ', romaji: 'pa', type: 'handakuten', row: 'pa', mnemonic: 'Ha with a little pop circle.', strokeCount: 4, exampleWord: { japanese: 'パン', reading: 'pan', english: 'bread' } },
+  { id: 'h_pi', char: 'ぴ', romaji: 'pi', type: 'handakuten', row: 'pa', mnemonic: 'Hi with a little pop circle.', strokeCount: 2, exampleWord: { japanese: 'ぴかぴか', reading: 'pikapika', english: 'sparkling' } },
+  { id: 'h_pu', char: 'ぷ', romaji: 'pu', type: 'handakuten', row: 'pa', mnemonic: 'Fu with a little pop circle.', strokeCount: 5, exampleWord: { japanese: 'ぷるぷる', reading: 'purupuru', english: 'jiggly' } },
+  { id: 'h_pe', char: 'ぺ', romaji: 'pe', type: 'handakuten', row: 'pa', mnemonic: 'He with a little pop circle.', strokeCount: 2, exampleWord: { japanese: 'ぺこぺこ', reading: 'pekopeko', english: 'hungry' } },
+  { id: 'h_po', char: 'ぽ', romaji: 'po', type: 'handakuten', row: 'pa', mnemonic: 'Ho with a little pop circle.', strokeCount: 5, exampleWord: { japanese: 'ぽかぽか', reading: 'pokapoka', english: 'warm and pleasant' } }
 ];

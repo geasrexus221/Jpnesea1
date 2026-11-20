@@ -479,5 +479,37 @@ export const KATAKANA_DATA: KanaItem[] = [
     mnemonic: 'One eye winking horizontally (stroke goes up-to-right).',
     strokeCount: 2,
     exampleWord: { japanese: 'パン', reading: 'pan', english: 'bread' }
-  }
+  },
+
+  // Katakana Dakuten (G, Z, D, B)
+  { id: 'k_ga', char: 'ガ', romaji: 'ga', type: 'dakuten', row: 'ga', mnemonic: 'Ka with two dots.', strokeCount: 5, exampleWord: { japanese: 'ガラス', reading: 'garasu', english: 'glass' } },
+  { id: 'k_gi', char: 'ギ', romaji: 'gi', type: 'dakuten', row: 'ga', mnemonic: 'Ki with two dots.', strokeCount: 6, exampleWord: { japanese: 'ギター', reading: 'gitā', english: 'guitar' } },
+  { id: 'k_gu', char: 'グ', romaji: 'gu', type: 'dakuten', row: 'ga', mnemonic: 'Ku with two dots.', strokeCount: 3, exampleWord: { japanese: 'グラス', reading: 'gurasu', english: 'drinking glass' } },
+  { id: 'k_ge', char: 'ゲ', romaji: 'ge', type: 'dakuten', row: 'ga', mnemonic: 'Ke with two dots.', strokeCount: 5, exampleWord: { japanese: 'ゲーム', reading: 'gēmu', english: 'game' } },
+  { id: 'k_go', char: 'ゴ', romaji: 'go', type: 'dakuten', row: 'ga', mnemonic: 'Ko with two dots.', strokeCount: 4, exampleWord: { japanese: 'ゴルフ', reading: 'gorufu', english: 'golf' } },
+
+  { id: 'k_za', char: 'ザ', romaji: 'za', type: 'dakuten', row: 'za', mnemonic: 'Sa with two dots.', strokeCount: 5, exampleWord: { japanese: 'サラダ', reading: 'sarada', english: 'salad' } },
+  { id: 'k_ji', char: 'ジ', romaji: 'ji', type: 'dakuten', row: 'za', mnemonic: 'Shi with two dots.', strokeCount: 5, exampleWord: { japanese: 'ジュース', reading: 'jūsu', english: 'juice' } },
+  { id: 'k_zu', char: 'ズ', romaji: 'zu', type: 'dakuten', row: 'za', mnemonic: 'Su with two dots.', strokeCount: 4, exampleWord: { japanese: 'ズボン', reading: 'zubon', english: 'trousers' } },
+  { id: 'k_ze', char: 'ゼ', romaji: 'ze', type: 'dakuten', row: 'za', mnemonic: 'Se with two dots.', strokeCount: 4, exampleWord: { japanese: 'ゼロ', reading: 'zero', english: 'zero' } },
+  { id: 'k_zo', char: 'ゾ', romaji: 'zo', type: 'dakuten', row: 'za', mnemonic: 'So with two dots.', strokeCount: 4, exampleWord: { japanese: 'ゾンビ', reading: 'zonbi', english: 'zombie' } },
+
+  { id: 'k_da', char: 'ダ', romaji: 'da', type: 'dakuten', row: 'da', mnemonic: 'Ta with two dots.', strokeCount: 5, exampleWord: { japanese: 'ダンス', reading: 'dansu', english: 'dance' } },
+  { id: 'k_dji', char: 'ヂ', romaji: 'ji', type: 'dakuten', row: 'da', mnemonic: 'Chi with two dots.', strokeCount: 5, exampleWord: { japanese: 'ラジオ', reading: 'rajio', english: 'radio' } },
+  { id: 'k_dzu', char: 'ヅ', romaji: 'zu', type: 'dakuten', row: 'da', mnemonic: 'Tsu with two dots.', strokeCount: 5, exampleWord: { japanese: 'ツヅク', reading: 'tsuzuku', english: 'continue' } },
+  { id: 'k_de', char: 'デ', romaji: 'de', type: 'dakuten', row: 'da', mnemonic: 'Te with two dots.', strokeCount: 5, exampleWord: { japanese: 'デッキ', reading: 'dekki', english: 'Deck' } },
+  { id: 'k_do', char: 'ド', romaji: 'do', type: 'dakuten', row: 'da', mnemonic: 'To with two dots.', strokeCount: 4, exampleWord: { japanese: 'ドロー', reading: 'dorō', english: 'Draw' } },
+
+  { id: 'k_ba', char: 'バ', romaji: 'ba', type: 'dakuten', row: 'ba', mnemonic: 'Ha with two dots.', strokeCount: 4, exampleWord: { japanese: 'バス', reading: 'basu', english: 'bus' } },
+  { id: 'k_bi', char: 'ビ', romaji: 'bi', type: 'dakuten', row: 'ba', mnemonic: 'Hi with two dots.', strokeCount: 4, exampleWord: { japanese: 'ビル', reading: 'biru', english: 'building' } },
+  { id: 'k_bu', char: 'ブ', romaji: 'bu', type: 'dakuten', row: 'ba', mnemonic: 'Fu with two dots.', strokeCount: 3, exampleWord: { japanese: 'ブログ', reading: 'burogu', english: 'blog' } },
+  { id: 'k_be', char: 'ベ', romaji: 'be', type: 'dakuten', row: 'ba', mnemonic: 'He with two dots.', strokeCount: 3, exampleWord: { japanese: 'ベッド', reading: 'beddo', english: 'bed' } },
+  { id: 'k_bo', char: 'ボ', romaji: 'bo', type: 'dakuten', row: 'ba', mnemonic: 'Ho with two dots.', strokeCount: 6, exampleWord: { japanese: 'ボール', reading: 'bōru', english: 'ball' } },
+
+  // Katakana Handakuten (P)
+  { id: 'k_pa', char: 'パ', romaji: 'pa', type: 'handakuten', row: 'pa', mnemonic: 'Ha with a circle.', strokeCount: 3, exampleWord: { japanese: 'パン', reading: 'pan', english: 'bread' } },
+  { id: 'k_pi', char: 'ピ', romaji: 'pi', type: 'handakuten', row: 'pa', mnemonic: 'Hi with a circle.', strokeCount: 3, exampleWord: { japanese: 'ピアノ', reading: 'piano', english: 'piano' } },
+  { id: 'k_pu', char: 'プ', romaji: 'pu', type: 'handakuten', row: 'pa', mnemonic: 'Fu with a circle.', strokeCount: 2, exampleWord: { japanese: 'プール', reading: 'pūru', english: 'pool' } },
+  { id: 'k_pe', char: 'ペ', romaji: 'pe', type: 'handakuten', row: 'pa', mnemonic: 'He with a circle.', strokeCount: 2, exampleWord: { japanese: 'ペン', reading: 'pen', english: 'pen' } },
+  { id: 'k_po', char: 'ポ', romaji: 'po', type: 'handakuten', row: 'pa', mnemonic: 'Ho with a circle.', strokeCount: 5, exampleWord: { japanese: 'ポスト', reading: 'posuto', english: 'postbox' } }
 ];

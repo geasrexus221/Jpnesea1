@@ -23,34 +23,47 @@ interface KanaChartProps {
 }
 
 type QuizDirection = 'romaji_to_kana' | 'kana_to_romaji' | 'mixed';
+type SoundCategory = 'gojuon' | 'dakuten' | 'handakuten';
 
 interface RowOption {
   id: string;
   name: string;
+  category: SoundCategory;
   hiraganaSample: string;
   katakanaSample: string;
 }
 
-const ROW_CONFIG: RowOption[] = [
-  { id: 'a', name: 'A-Row (Vowels)', hiraganaSample: 'あ い う え お', katakanaSample: 'ア イ ウ エ オ' },
-  { id: 'ka', name: 'Ka-Row', hiraganaSample: 'か き く け こ', katakanaSample: 'カ キ ク ケ コ' },
-  { id: 'sa', name: 'Sa-Row', hiraganaSample: 'さ し す せ そ', katakanaSample: 'サ シ ス セ ソ' },
-  { id: 'ta', name: 'Ta-Row', hiraganaSample: 'た ち つ て と', katakanaSample: 'タ チ ツ テ ト' },
-  { id: 'na', name: 'Na-Row', hiraganaSample: 'な に ぬ ね の', katakanaSample: 'ナ ニ ヌ ネ ノ' },
-  { id: 'ha', name: 'Ha-Row', hiraganaSample: 'は ひ ふ へ ほ', katakanaSample: 'ハ ヒ フ ヘ ホ' },
-  { id: 'ma', name: 'Ma-Row', hiraganaSample: 'ま み む め も', katakanaSample: 'マ ミ ム メ モ' },
-  { id: 'ya', name: 'Ya-Row', hiraganaSample: 'や ゆ よ', katakanaSample: 'ヤ ユ ヨ' },
-  { id: 'ra', name: 'Ra-Row', hiraganaSample: 'ら り る れ ろ', katakanaSample: 'ラ リ ル レ ロ' },
-  { id: 'wa', name: 'Wa/N-Row', hiraganaSample: 'わ を ん', katakanaSample: 'ワ ヲ ン' },
+const ALL_ROW_CONFIG: RowOption[] = [
+  // 50-Sounds (Gojuon)
+  { id: 'a', name: 'A-Row (Vowels)', category: 'gojuon', hiraganaSample: 'あ い う え お', katakanaSample: 'ア イ ウ エ オ' },
+  { id: 'ka', name: 'Ka-Row', category: 'gojuon', hiraganaSample: 'か き く け こ', katakanaSample: 'カ キ ク ケ コ' },
+  { id: 'sa', name: 'Sa-Row', category: 'gojuon', hiraganaSample: 'さ し す せ そ', katakanaSample: 'サ シ ス セ ソ' },
+  { id: 'ta', name: 'Ta-Row', category: 'gojuon', hiraganaSample: 'た ち つ て と', katakanaSample: 'タ チ ツ テ ト' },
+  { id: 'na', name: 'Na-Row', category: 'gojuon', hiraganaSample: 'な に ぬ ね の', katakanaSample: 'ナ ニ ヌ ネ ノ' },
+  { id: 'ha', name: 'Ha-Row', category: 'gojuon', hiraganaSample: 'は ひ ふ へ ほ', katakanaSample: 'ハ ヒ フ ヘ ホ' },
+  { id: 'ma', name: 'Ma-Row', category: 'gojuon', hiraganaSample: 'ま み む め も', katakanaSample: 'マ ミ ム メ モ' },
+  { id: 'ya', name: 'Ya-Row', category: 'gojuon', hiraganaSample: 'や ゆ よ', katakanaSample: 'ヤ ユ ヨ' },
+  { id: 'ra', name: 'Ra-Row', category: 'gojuon', hiraganaSample: 'ら り る れ ろ', katakanaSample: 'ラ リ ル レ ロ' },
+  { id: 'wa', name: 'Wa/N-Row', category: 'gojuon', hiraganaSample: 'わ を ん', katakanaSample: 'ワ ヲ ン' },
+  // Voiced Dots (Dakuten: G, Z, D, B)
+  { id: 'ga', name: 'Ga-Row (Voiced G)', category: 'dakuten', hiraganaSample: 'が ぎ ぐ げ ご', katakanaSample: 'ガ ギ グ ゲ ゴ' },
+  { id: 'za', name: 'Za-Row (Voiced Z)', category: 'dakuten', hiraganaSample: 'ざ じ ず ぜ ぞ', katakanaSample: 'ザ ジ ズ ゼ ゾ' },
+  { id: 'da', name: 'Da-Row (Voiced D: ど/ド)', category: 'dakuten', hiraganaSample: 'だ ぢ づ で ど', katakanaSample: 'ダ ヂ ヅ デ ド' },
+  { id: 'ba', name: 'Ba-Row (Voiced B)', category: 'dakuten', hiraganaSample: 'ば び ぶ べ ぼ', katakanaSample: 'バ ビ ブ ベ ボ' },
+  // Half-Voiced Circles (Handakuten: P)
+  { id: 'pa', name: 'Pa-Row (Half-Voiced P)', category: 'handakuten', hiraganaSample: 'ぱ ぴ ぷ ぺ ぽ', katakanaSample: 'パ ピ プ ペ ポ' },
 ];
 
 export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCharacter }) => {
   const [viewMode, setViewMode] = useState<'grid' | 'quiz'>('grid');
   const [selectedType, setSelectedType] = useState<'hiragana' | 'katakana'>('hiragana');
+  const [soundCategory, setSoundCategory] = useState<SoundCategory>('gojuon');
   const [activeItem, setActiveItem] = useState<KanaItem | null>(null);
 
-  // Multi-select row filter state (defaults to all rows)
-  const [selectedRows, setSelectedRows] = useState<string[]>(ROW_CONFIG.map((r) => r.id));
+  // Multi-select row filter state (defaults to all gojuon rows)
+  const [selectedRows, setSelectedRows] = useState<string[]>(
+    ALL_ROW_CONFIG.filter((r) => r.category === 'gojuon').map((r) => r.id)
+  );
   const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
 
   // Quiz State
@@ -68,30 +81,59 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
   const { triggerHaptic } = useHaptics();
 
   const currentDataset = selectedType === 'hiragana' ? HIRAGANA_DATA : KATAKANA_DATA;
-  const gojuonItems = currentDataset.filter((item) => item.type === 'gojuon');
-  const rows = ['a', 'ka', 'sa', 'ta', 'na', 'ha', 'ma', 'ya', 'ra', 'wa', 'n'];
+
+  const currentRows =
+    soundCategory === 'gojuon'
+      ? ['a', 'ka', 'sa', 'ta', 'na', 'ha', 'ma', 'ya', 'ra', 'wa', 'n']
+      : soundCategory === 'dakuten'
+      ? ['ga', 'za', 'da', 'ba']
+      : ['pa'];
 
   // Helper to fetch character in a row
   const getCharInRow = (row: string, vowelIndex: number) => {
     const vowels = ['a', 'i', 'u', 'e', 'o'];
     const targetVowel = vowels[vowelIndex];
 
-    if (row === 'n') {
-      return vowelIndex === 0 ? gojuonItems.find((i) => i.row === 'n') : null;
-    }
-    if (row === 'ya') {
-      if (vowelIndex === 0) return gojuonItems.find((i) => i.id.endsWith('ya'));
-      if (vowelIndex === 2) return gojuonItems.find((i) => i.id.endsWith('yu'));
-      if (vowelIndex === 4) return gojuonItems.find((i) => i.id.endsWith('yo'));
-      return null;
-    }
-    if (row === 'wa') {
-      if (vowelIndex === 0) return gojuonItems.find((i) => i.id.endsWith('wa'));
-      if (vowelIndex === 4) return gojuonItems.find((i) => i.id.endsWith('wo'));
-      return null;
+    if (soundCategory === 'gojuon') {
+      const gojuonItems = currentDataset.filter((item) => item.type === 'gojuon');
+      if (row === 'n') {
+        return vowelIndex === 0 ? gojuonItems.find((i) => i.row === 'n') : null;
+      }
+      if (row === 'ya') {
+        if (vowelIndex === 0) return gojuonItems.find((i) => i.id.endsWith('ya'));
+        if (vowelIndex === 2) return gojuonItems.find((i) => i.id.endsWith('yu'));
+        if (vowelIndex === 4) return gojuonItems.find((i) => i.id.endsWith('yo'));
+        return null;
+      }
+      if (row === 'wa') {
+        if (vowelIndex === 0) return gojuonItems.find((i) => i.id.endsWith('wa'));
+        if (vowelIndex === 4) return gojuonItems.find((i) => i.id.endsWith('wo'));
+        return null;
+      }
+      return gojuonItems.find((i) => i.row === row && i.romaji.endsWith(targetVowel));
     }
 
-    return gojuonItems.find((i) => i.row === row && i.romaji.endsWith(targetVowel));
+    if (soundCategory === 'dakuten') {
+      const dakutenItems = currentDataset.filter((item) => item.type === 'dakuten');
+      if (row === 'da') {
+        if (vowelIndex === 0) return dakutenItems.find((i) => i.id.endsWith('_da'));
+        if (vowelIndex === 1) return dakutenItems.find((i) => i.id.endsWith('_dji'));
+        if (vowelIndex === 2) return dakutenItems.find((i) => i.id.endsWith('_dzu'));
+        if (vowelIndex === 3) return dakutenItems.find((i) => i.id.endsWith('_de'));
+        if (vowelIndex === 4) return dakutenItems.find((i) => i.id.endsWith('_do')); // ど / ド (do) is here!
+      }
+      if (row === 'za') {
+        if (vowelIndex === 1) return dakutenItems.find((i) => i.id.endsWith('_ji'));
+      }
+      return dakutenItems.find((i) => i.row === row && i.romaji.endsWith(targetVowel));
+    }
+
+    if (soundCategory === 'handakuten') {
+      const handakutenItems = currentDataset.filter((item) => item.type === 'handakuten');
+      return handakutenItems.find((i) => i.row === 'pa' && i.romaji.endsWith(targetVowel));
+    }
+
+    return null;
   };
 
   const handleCellClick = (item: KanaItem) => {
@@ -112,53 +154,51 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
       clearTimeout(timerRef.current);
     }
 
-    const allGojuon = type === 'hiragana' ? HIRAGANA_DATA.filter((i) => i.type === 'gojuon') : KATAKANA_DATA;
-    // Filter pool strictly to characters belonging to selected rows
-    let pool = allGojuon.filter((i) => activeRows.includes(i.row));
+    const allItems = type === 'hiragana' ? HIRAGANA_DATA : KATAKANA_DATA;
+    let pool = allItems.filter((i) => activeRows.includes(i.row));
     if (pool.length === 0) {
-      pool = allGojuon;
+      pool = allItems.filter((i) => i.type === 'gojuon');
     }
 
-    const randomItem = pool[Math.floor(Math.random() * pool.length)];
+    // Pick random target
+    const randomIndex = Math.floor(Math.random() * pool.length);
+    const correctItem = pool[randomIndex];
 
-    let isRomajiPrompt = true;
-    if (dir === 'kana_to_romaji') {
-      isRomajiPrompt = false;
-    } else if (dir === 'mixed') {
-      isRomajiPrompt = Math.random() > 0.5;
-    }
+    // Pick 3 random distractors
+    const otherPool = allItems.filter((i) => i.id !== correctItem.id);
+    const shuffledOthers = [...otherPool].sort(() => 0.5 - Math.random());
+    const distractors = shuffledOthers.slice(0, 3);
 
-    setTargetItem(randomItem);
+    // Shuffle 4 options
+    const options = [correctItem, ...distractors].sort(() => 0.5 - Math.random());
+
+    // Determine direction for mixed
+    const isRomajiPrompt = dir === 'mixed' ? Math.random() > 0.5 : dir === 'romaji_to_kana';
+
+    setTargetItem(correctItem);
+    setQuizOptionItems(options);
     setCurrentPromptIsRomaji(isRomajiPrompt);
     setSelectedAnswerId(null);
-
-    // Pick distractors preferably from the filtered pool
-    let distractorPool = pool.filter((i) => i.id !== randomItem.id);
-    if (distractorPool.length < 3) {
-      // Fallback to other characters if selected pool is very small (e.g. 1 row)
-      distractorPool = allGojuon.filter((i) => i.id !== randomItem.id);
-    }
-
-    const distractors = distractorPool.sort(() => Math.random() - 0.5).slice(0, 3);
-    const shuffled = [randomItem, ...distractors].sort(() => Math.random() - 0.5);
-    setQuizOptionItems(shuffled);
   };
 
   useEffect(() => {
     if (viewMode === 'quiz') {
-      generateQuestion(selectedType, quizDirection, selectedRows);
+      generateQuestion();
     }
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
     };
-  }, [viewMode, selectedType, quizDirection, selectedRows]);
+  }, [viewMode, selectedType, quizDirection]);
 
-  const handleQuizAnswer = (item: KanaItem) => {
-    if (!targetItem || selectedAnswerId !== null) return;
-    setSelectedAnswerId(item.id);
+  const handleAnswer = (chosenItem: KanaItem) => {
+    if (selectedAnswerId !== null || !targetItem) return;
 
-    const isCorrect = item.id === targetItem.id;
+    setSelectedAnswerId(chosenItem.id);
     setTotalAnswered((prev) => prev + 1);
+
+    const isCorrect = chosenItem.id === targetItem.id;
 
     if (isCorrect) {
       triggerHaptic('success');
@@ -168,28 +208,23 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
     } else {
       triggerHaptic('error');
       setStreak(0);
-      speak(item.char);
     }
-
-    timerRef.current = setTimeout(() => {
-      generateQuestion(selectedType, quizDirection, selectedRows);
-    }, 2400);
   };
 
-  // Row Filter Helpers
   const toggleRow = (rowId: string) => {
     triggerHaptic('light');
-    if (selectedRows.includes(rowId)) {
-      if (selectedRows.length === 1) return; // Keep at least 1 row selected
-      setSelectedRows(selectedRows.filter((r) => r !== rowId));
-    } else {
-      setSelectedRows([...selectedRows, rowId]);
-    }
+    setSelectedRows((prev) => {
+      if (prev.includes(rowId)) {
+        if (prev.length === 1) return prev;
+        return prev.filter((r) => r !== rowId);
+      }
+      return [...prev, rowId];
+    });
   };
 
   const selectAllRows = () => {
     triggerHaptic('light');
-    setSelectedRows(ROW_CONFIG.map((r) => r.id));
+    setSelectedRows(ALL_ROW_CONFIG.map((r) => r.id));
   };
 
   const selectOnlyVowels = () => {
@@ -199,11 +234,11 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
 
   // Get active characters count
   const activeCharCount = (
-    selectedType === 'hiragana' ? HIRAGANA_DATA.filter((i) => i.type === 'gojuon') : KATAKANA_DATA
+    selectedType === 'hiragana' ? HIRAGANA_DATA : KATAKANA_DATA
   ).filter((i) => selectedRows.includes(i.row)).length;
 
   return (
-    <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto pb-12">
+    <div className="space-y-3.5 sm:space-y-5 max-w-4xl mx-auto pb-12">
       {/* 1. Master View Mode Selector: Grid vs Chart Quiz */}
       <div className="bg-white p-3 sm:p-4 rounded-2xl sm:rounded-3xl border border-stone-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
         {/* Title */}
@@ -213,11 +248,11 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
           </div>
           <div>
             <h2 className="text-sm sm:text-base font-bold text-slate-900">
-              {viewMode === 'grid' ? '50-Sounds Master Chart' : 'Kana Recognition Quiz'}
+              {viewMode === 'grid' ? 'Kana Sound Charts (五十音・濁点)' : 'Kana Recognition Quiz'}
             </h2>
             <p className="text-[10px] sm:text-xs text-slate-500">
               {viewMode === 'grid'
-                ? '五十音図 — Tap any character for audio & mnemonics'
+                ? 'Tap any character for audio, romaji & mnemonics'
                 : 'Customizable row drill with dual per-answer reveals'}
             </p>
           </div>
@@ -278,8 +313,47 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
         </button>
       </div>
 
+      {/* 3. SOUND CATEGORY TABS: Basic (Gojuon) vs Voiced (Dakuten) vs Half-Voiced (Handakuten) */}
+      {viewMode === 'grid' && (
+        <div className="flex p-1 bg-stone-100 rounded-xl max-w-md mx-auto">
+          <button
+            type="button"
+            onClick={() => setSoundCategory('gojuon')}
+            className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              soundCategory === 'gojuon'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Basic (五十音)
+          </button>
+          <button
+            type="button"
+            onClick={() => setSoundCategory('dakuten')}
+            className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              soundCategory === 'dakuten'
+                ? 'bg-white text-japan-crimson shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Voiced (濁点: ど, が)
+          </button>
+          <button
+            type="button"
+            onClick={() => setSoundCategory('handakuten')}
+            className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              soundCategory === 'handakuten'
+                ? 'bg-white text-japan-crimson shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Half-Voiced (半濁点: ぽ)
+          </button>
+        </div>
+      )}
+
       {/* ======================================================== */}
-      {/* MODE A: 50-SOUNDS GRID VIEW                              */}
+      {/* MODE A: 50-SOUNDS / DAKUTEN GRID VIEW                     */}
       {/* ======================================================== */}
       {viewMode === 'grid' && (
         <div className="space-y-4 animate-fade-in">
@@ -297,7 +371,7 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
 
               {/* Rows */}
               <div className="space-y-1.5 sm:space-y-2">
-                {rows.map((rowName) => (
+                {currentRows.map((rowName) => (
                   <div key={rowName} className="grid grid-cols-6 gap-1.5 sm:gap-2 items-center">
                     {/* Row Label */}
                     <div className="text-center font-bold text-[10px] sm:text-xs uppercase text-slate-400 bg-stone-50 py-2 sm:py-3 rounded-xl border border-stone-100">
@@ -348,43 +422,34 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
 
           {/* Selected Character Detail Card Drawer */}
           {activeItem && (
-            <div className="p-4 sm:p-5 bg-gradient-to-br from-white to-stone-50 rounded-3xl border-2 border-red-100 shadow-md flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in">
+            <div className="bg-white rounded-3xl p-4 sm:p-6 border border-stone-200 shadow-md animate-fade-in flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-red-50 border border-red-200 flex flex-col items-center justify-center shadow-inner">
-                  <span className="font-japanese text-3xl sm:text-4xl font-bold text-japan-crimson">
-                    {activeItem.char}
-                  </span>
-                  <span className="text-[10px] font-semibold text-slate-500 uppercase mt-0.5">
-                    {activeItem.romaji}
-                  </span>
+                <div className="w-16 h-16 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center font-japanese text-3xl font-bold text-japan-crimson shadow-inner">
+                  {activeItem.char}
                 </div>
-
-                <div>
+                <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-japan-crimson">
-                      Memory Hint
-                    </span>
-                    <span className="text-[10px] text-slate-400 bg-stone-100 px-2 py-0.5 rounded-full">
-                      {activeItem.strokeCount} strokes
+                    <span className="text-lg font-bold text-slate-900">{activeItem.romaji}</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 px-2 py-0.5 rounded-full bg-stone-100">
+                      {activeItem.type}
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm font-medium text-slate-800 mt-1 max-w-lg">
-                    💡 {activeItem.mnemonic}
+                  <p className="text-xs text-slate-600 italic max-w-md">"{activeItem.mnemonic}"</p>
+                  <p className="text-[11px] text-slate-400">
+                    Example: <span className="font-japanese text-slate-800 font-bold">{activeItem.exampleWord.japanese}</span> ({activeItem.exampleWord.reading}) — {activeItem.exampleWord.english}
                   </p>
-                  <div className="flex items-center gap-2 mt-1.5 text-xs text-slate-600">
-                    <span className="text-slate-400">Word:</span>
-                    <span className="font-japanese font-bold text-slate-900">
-                      {activeItem.exampleWord.japanese}
-                    </span>
-                    <span className="text-slate-500">({activeItem.exampleWord.reading})</span>
-                    <span>— {activeItem.exampleWord.english}</span>
-                  </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <AudioButton text={activeItem.char} size="md" label="Sound" />
-                <AudioButton text={activeItem.exampleWord.japanese} size="sm" label="Word" />
+                <AudioButton text={activeItem.char} />
+                <button
+                  type="button"
+                  onClick={() => setActiveItem(null)}
+                  className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-stone-100 transition-colors"
+                >
+                  <X size={18} />
+                </button>
               </div>
             </div>
           )}
@@ -392,204 +457,115 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
       )}
 
       {/* ======================================================== */}
-      {/* MODE B: CHART QUIZ WITH POP-UP ROW FILTER & DUAL REVEALS */}
+      {/* MODE B: PRACTICE QUIZ ARENA                              */}
       {/* ======================================================== */}
-      {viewMode === 'quiz' && targetItem && (
-        <div className="space-y-3 sm:space-y-4 animate-fade-in max-w-md mx-auto">
-          {/* Quiz Top Action Bar: Direction Switcher & Clean Pop-up Filter Button */}
-          <div className="bg-white p-2.5 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between gap-2">
-            {/* Direction Selector */}
-            <div className="flex p-0.5 bg-stone-100 rounded-xl text-xs font-bold flex-1">
-              <button
-                type="button"
-                onClick={() => setQuizDirection('romaji_to_kana')}
-                className={`flex-1 py-1 px-2 rounded-lg transition-all ${
-                  quizDirection === 'romaji_to_kana'
-                    ? 'bg-red-50 text-japan-crimson border border-red-200 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                a ➔ [あ]
-              </button>
-              <button
-                type="button"
-                onClick={() => setQuizDirection('kana_to_romaji')}
-                className={`flex-1 py-1 px-2 rounded-lg transition-all ${
-                  quizDirection === 'kana_to_romaji'
-                    ? 'bg-red-50 text-japan-crimson border border-red-200 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                [あ] ➔ a
-              </button>
-              <button
-                type="button"
-                onClick={() => setQuizDirection('mixed')}
-                className={`py-1 px-2.5 rounded-lg transition-all ${
-                  quizDirection === 'mixed'
-                    ? 'bg-red-50 text-japan-crimson border border-red-200 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                🔀 Mixed
-              </button>
-            </div>
-
-            {/* Pop-up Filter Settings Button (No scrollable clutter!) */}
+      {viewMode === 'quiz' && (
+        <div className="space-y-3.5 animate-fade-in max-w-xl mx-auto">
+          {/* Quiz Top Action Bar: Settings Pop-Up Button + Score */}
+          <div className="flex items-center justify-between gap-2 p-2.5 rounded-2xl bg-white border border-stone-200 shadow-2xs">
             <button
               type="button"
               onClick={() => setIsFilterModalOpen(true)}
-              className="py-1.5 px-3 rounded-xl bg-stone-50 hover:bg-stone-100 text-slate-700 border border-stone-200 text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
-              title="Open Row Filter Settings"
+              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs active:scale-95 transition-all flex items-center gap-1.5"
             >
-              <SlidersHorizontal size={13} className="text-japan-crimson" />
-              <span>
-                Rows ({selectedRows.length === ROW_CONFIG.length ? 'All' : `${selectedRows.length}`})
-              </span>
+              <SlidersHorizontal size={13} className="text-amber-300" />
+              <span>Filter Rows ({selectedRows.length})</span>
             </button>
-          </div>
 
-          {/* Active Row Scope Indicator & Score Header */}
-          <div className="flex items-center justify-between text-xs px-2 text-slate-500 font-bold">
-            <button
-              type="button"
-              onClick={() => setIsFilterModalOpen(true)}
-              className="text-slate-600 hover:text-japan-crimson text-[11px] underline flex items-center gap-1"
-            >
-              <span>
-                {selectedRows.length === ROW_CONFIG.length
-                  ? 'Practicing All Rows (46)'
-                  : `Testing: ${selectedRows.map((r) => r.toUpperCase()).join(', ')} (${activeCharCount} chars)`}
-              </span>
-            </button>
-            <span className="flex items-center gap-1 text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
-              🔥 Streak: {streak}
-            </span>
-          </div>
-
-          {/* The Question Prompt Card */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200 shadow-sm text-center space-y-4">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
-              {currentPromptIsRomaji
-                ? `Pick the Japanese character for:`
-                : `What is the reading of this character?`}
-            </span>
-
-            {/* Prompt Display */}
-            <div className="inline-flex flex-col items-center justify-center min-w-[120px] min-h-[120px] p-4 rounded-3xl bg-stone-50 border-2 border-stone-200/80 shadow-inner">
-              {currentPromptIsRomaji ? (
-                <div className="text-5xl sm:text-6xl font-black uppercase text-japan-crimson tracking-widest">
-                  {targetItem.romaji}
-                </div>
-              ) : (
-                <div className="font-japanese text-6xl sm:text-7xl font-bold text-slate-900">
-                  {targetItem.char}
-                </div>
+            <div className="text-xs font-semibold text-slate-600">
+              Score: <span className="text-japan-crimson font-bold">{score}</span> / {totalAnswered}
+              {streak > 1 && (
+                <span className="ml-2 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-bold text-[10px] border border-amber-200">
+                  🔥 {streak} Streak
+                </span>
               )}
-              <div className="mt-2">
-                <button
-                  type="button"
-                  onClick={() => speak(targetItem.char)}
-                  className="p-1.5 rounded-full hover:bg-stone-200 text-slate-400 hover:text-slate-700 transition-colors"
-                  title="Hear pronunciation"
-                >
-                  <Volume2 size={16} />
-                </button>
+            </div>
+          </div>
+
+          {/* Quiz Question Card */}
+          {targetItem && (
+            <div className="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200 shadow-sm text-center space-y-4">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                  {currentPromptIsRomaji ? 'Identify Character' : 'Identify Romaji Sound'}
+                </span>
+                <div className="font-japanese text-4xl sm:text-5xl font-black text-slate-900 mt-1">
+                  {currentPromptIsRomaji ? targetItem.romaji : targetItem.char}
+                </div>
+              </div>
+
+              {/* 4 Answer Choice Buttons */}
+              <div className="grid grid-cols-2 gap-2.5 pt-1">
+                {quizOptionItems.map((option) => {
+                  const isSelected = selectedAnswerId === option.id;
+                  const hasAnswered = selectedAnswerId !== null;
+                  const isCorrect = option.id === targetItem.id;
+
+                  let btnStyle = 'bg-stone-50 border-stone-200 text-slate-800 hover:bg-stone-100';
+                  if (hasAnswered) {
+                    if (isCorrect) {
+                      btnStyle = 'bg-emerald-50 border-emerald-500 text-emerald-800 ring-2 ring-emerald-300 font-bold';
+                    } else if (isSelected) {
+                      btnStyle = 'bg-rose-50 border-rose-500 text-rose-800 ring-2 ring-rose-300';
+                    } else {
+                      btnStyle = 'opacity-50 border-stone-200 bg-stone-50';
+                    }
+                  }
+
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      disabled={hasAnswered}
+                      onClick={() => handleAnswer(option)}
+                      className={`p-3.5 rounded-2xl border text-center transition-all active:scale-95 flex flex-col items-center justify-center relative ${btnStyle}`}
+                    >
+                      <span className="font-japanese text-2xl font-bold">
+                        {currentPromptIsRomaji ? option.char : option.romaji}
+                      </span>
+
+                      {/* Reveal secondary information once answered */}
+                      {hasAnswered && (
+                        <span className="text-[11px] font-sans text-slate-500 mt-0.5">
+                          {currentPromptIsRomaji ? option.romaji : option.char}
+                        </span>
+                      )}
+
+                      {hasAnswered && isCorrect && (
+                        <CheckCircle2 size={16} className="absolute top-2 right-2 text-emerald-600" />
+                      )}
+                      {hasAnswered && isSelected && !isCorrect && (
+                        <XCircle size={16} className="absolute top-2 right-2 text-rose-500" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Next Question Action */}
+              <div className="pt-2">
+                {selectedAnswerId !== null ? (
+                  <button
+                    type="button"
+                    onClick={() => generateQuestion(selectedType, quizDirection, selectedRows)}
+                    className="py-2 px-6 rounded-2xl bg-japan-crimson hover:bg-red-700 text-white font-bold text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 mx-auto"
+                  >
+                    <span>Next Question</span>
+                    <ArrowRight size={14} />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => generateQuestion(selectedType, quizDirection, selectedRows)}
+                    className="text-xs font-semibold text-slate-400 hover:text-slate-700 py-1 transition-colors flex items-center justify-center gap-1 mx-auto"
+                  >
+                    <span>Skip Question</span>
+                    <ArrowRight size={13} />
+                  </button>
+                )}
               </div>
             </div>
-
-            {/* 4 Answer Choice Buttons (WITH PER-ANSWER REVEAL) */}
-            <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto pt-1">
-              {quizOptionItems.map((item) => {
-                const isChosen = selectedAnswerId === item.id;
-                const isCorrect = item.id === targetItem.id;
-                const hasAnswered = selectedAnswerId !== null;
-
-                let btnStyle = 'bg-stone-50 hover:bg-stone-100 text-slate-800 border-stone-200';
-
-                if (hasAnswered) {
-                  if (isCorrect) {
-                    btnStyle =
-                      'bg-emerald-50 text-emerald-950 border-emerald-400 ring-2 ring-emerald-300 shadow-md font-bold';
-                  } else if (isChosen) {
-                    btnStyle =
-                      'bg-red-50 text-red-950 border-red-400 ring-2 ring-red-300 shadow-md font-bold';
-                  } else {
-                    btnStyle = 'bg-stone-50/70 text-slate-600 border-stone-200 opacity-80';
-                  }
-                }
-
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    disabled={hasAnswered}
-                    onClick={() => handleQuizAnswer(item)}
-                    className={`h-20 sm:h-22 rounded-2xl border transition-all duration-200 active:scale-95 flex flex-col items-center justify-center relative p-2 ${btnStyle}`}
-                  >
-                    {!hasAnswered ? (
-                      <span
-                        className={
-                          currentPromptIsRomaji
-                            ? 'font-japanese text-3xl font-bold'
-                            : 'text-2xl font-black uppercase'
-                        }
-                      >
-                        {currentPromptIsRomaji ? item.char : item.romaji}
-                      </span>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center animate-fade-in">
-                        <span className="font-japanese text-2xl sm:text-3xl font-bold leading-tight">
-                          {item.char}
-                        </span>
-                        <span
-                          className={`text-xs font-black uppercase tracking-wider mt-0.5 px-2 py-0.2 rounded-full ${
-                            isCorrect
-                              ? 'bg-emerald-200/80 text-emerald-900'
-                              : isChosen
-                              ? 'bg-red-200/80 text-red-900'
-                              : 'bg-stone-200/70 text-slate-600'
-                          }`}
-                        >
-                          {item.romaji}
-                        </span>
-                      </div>
-                    )}
-
-                    {hasAnswered && isCorrect && (
-                      <CheckCircle2 size={16} className="absolute top-2 right-2 text-emerald-600" />
-                    )}
-                    {hasAnswered && isChosen && !isCorrect && (
-                      <XCircle size={16} className="absolute top-2 right-2 text-red-500" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Answer Feedback / Advance Action */}
-            <div className="pt-2">
-              {selectedAnswerId !== null ? (
-                <button
-                  type="button"
-                  onClick={() => generateQuestion(selectedType, quizDirection, selectedRows)}
-                  className="py-2.5 px-6 rounded-2xl bg-japan-crimson hover:bg-red-700 text-white font-bold text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 mx-auto animate-scale-up"
-                >
-                  <span>Next Question</span>
-                  <ArrowRight size={14} />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => generateQuestion(selectedType, quizDirection, selectedRows)}
-                  className="text-xs font-semibold text-slate-400 hover:text-slate-700 py-1 transition-colors flex items-center justify-center gap-1 mx-auto"
-                >
-                  <span>Skip Question</span>
-                  <ArrowRight size={13} />
-                </button>
-              )}
-            </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -608,7 +584,7 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
                     Row Filter Settings ({selectedType.toUpperCase()})
                   </h3>
                   <p className="text-[10px] text-slate-500">
-                    Toggle multiple rows to practice (e.g. Ka + Ha)
+                    Toggle multiple rows to practice (including Voiced Dakuten!)
                   </p>
                 </div>
               </div>
@@ -629,14 +605,14 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
                   onClick={selectAllRows}
                   className="px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-slate-700 hover:bg-stone-100 transition-colors"
                 >
-                  Select All (10 Rows)
+                  Select All
                 </button>
                 <button
                   type="button"
                   onClick={selectOnlyVowels}
                   className="px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-slate-700 hover:bg-stone-100 transition-colors"
                 >
-                  Only Vowels (A-Row)
+                  Only Vowels
                 </button>
               </div>
               <span className="text-[11px] text-japan-crimson font-semibold">
@@ -646,7 +622,7 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
 
             {/* Grid of Toggleable Rows (2 Columns) */}
             <div className="p-4 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {ROW_CONFIG.map((row) => {
+              {ALL_ROW_CONFIG.map((row) => {
                 const isSelected = selectedRows.includes(row.id);
                 const sample = selectedType === 'hiragana' ? row.hiraganaSample : row.katakanaSample;
 
@@ -658,25 +634,31 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
                     className={`p-3 rounded-2xl border text-left transition-all active:scale-95 flex items-center justify-between ${
                       isSelected
                         ? 'bg-red-50 border-japan-crimson ring-2 ring-red-300 shadow-sm'
-                        : 'bg-white hover:bg-stone-50 border-stone-200 text-slate-600 opacity-60'
+                        : 'bg-white border-stone-200 hover:bg-stone-50'
                     }`}
                   >
                     <div>
-                      <div className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
-                        <span
-                          className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                            isSelected
-                              ? 'bg-japan-crimson text-white'
-                              : 'bg-stone-200 text-slate-500'
-                          }`}
-                        >
-                          {isSelected ? <Check size={10} /> : ''}
-                        </span>
+                      <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                         <span>{row.name}</span>
+                        {row.category !== 'gojuon' && (
+                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 font-bold">
+                            {row.category === 'dakuten' ? '濁点' : '半濁点'}
+                          </span>
+                        )}
                       </div>
-                      <div className="font-japanese text-sm font-semibold text-slate-600 mt-1 pl-5">
+                      <div className="font-japanese text-sm font-semibold text-slate-500 mt-0.5">
                         {sample}
                       </div>
+                    </div>
+
+                    <div
+                      className={`w-5 h-5 rounded-md flex items-center justify-center border transition-colors ${
+                        isSelected
+                          ? 'bg-japan-crimson border-japan-crimson text-white'
+                          : 'border-stone-300 bg-white'
+                      }`}
+                    >
+                      {isSelected && <Check size={12} strokeWidth={3} />}
                     </div>
                   </button>
                 );
@@ -684,14 +666,16 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-stone-200 bg-white flex justify-end">
+            <div className="p-3 border-t border-stone-200 bg-white flex justify-end">
               <button
                 type="button"
-                onClick={() => setIsFilterModalOpen(false)}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-japan-crimson hover:bg-red-700 text-white font-bold text-xs shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                onClick={() => {
+                  setIsFilterModalOpen(false);
+                  generateQuestion(selectedType, quizDirection, selectedRows);
+                }}
+                className="px-5 py-2 rounded-xl bg-japan-crimson text-white font-bold text-xs shadow-md active:scale-95 transition-all"
               >
-                <span>Apply & Start Practice ({activeCharCount} Chars)</span>
-                <ArrowRight size={14} />
+                Apply & Practice ({activeCharCount})
               </button>
             </div>
           </div>
