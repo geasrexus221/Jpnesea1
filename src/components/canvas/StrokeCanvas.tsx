@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { RotateCcw, Eye, EyeOff, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
+import { RotateCcw, Eye, EyeOff, Sparkles, CheckCircle2, AlertCircle, Navigation } from 'lucide-react';
 import { useHaptics } from '../../hooks/useHaptics';
 import { evaluateStrokeAccuracy, EvaluationResult } from '../../utils/strokeEvaluator';
-import { getStrokeGuide } from '../../data/stroke_guides';
+import { getCharacterStrokePaths } from '../../data/stroke_paths';
 
 interface StrokeCanvasProps {
   character: string;
@@ -21,14 +21,14 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [showGuide, setShowGuide] = useState(true);
-  const [showStartPoints, setShowStartPoints] = useState(true);
+  const [showArrows, setShowArrows] = useState(true);
   const [hasDrawn, setHasDrawn] = useState(false);
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
 
   const { triggerHaptic } = useHaptics();
-  const guideInfo = getStrokeGuide(character, strokeCount);
+  const strokes = getCharacterStrokePaths(character, strokeCount);
 
-  // Auto-clear canvas whenever character prop changes!
+  // Auto-clear canvas whenever character changes
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -145,8 +145,9 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
       });
     } else {
       triggerHaptic('error');
-      // If failed, make sure ghost guide is visible so they learn
+      // If failed, make sure guide and arrows are visible
       setShowGuide(true);
+      setShowArrows(true);
     }
 
     if (onEvaluationComplete) {
@@ -156,7 +157,7 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
 
   return (
     <div className={`relative flex flex-col items-center select-none w-full max-w-sm ${className}`}>
-      {/* Drawing Pad Frame with Genkouyoushi 4-quadrant grid */}
+      {/* Drawing Pad Frame with Genkō yōshi 4-quadrant grid */}
       <div
         className={`relative w-72 h-72 sm:w-80 sm:h-80 bg-white rounded-3xl border-2 transition-all shadow-md overflow-hidden touch-none flex items-center justify-center ${
           evaluation?.isCorrect
@@ -172,35 +173,77 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
           <div className="h-full w-1/2 border-r border-dashed border-red-200 absolute top-0 left-0" />
         </div>
 
-        {/* Character Guide Template (Ghost Overlay) */}
-        {showGuide && (
-          <div
-            className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-200 select-none font-japanese font-normal transition-opacity duration-300"
-            style={{ fontSize: '11rem', lineHeight: 1 }}
-          >
-            {character}
-          </div>
-        )}
+        {/* Unified SVG Vector Layer (Ghost character + Stroke paths + Starting badges + Directional arrows) */}
+        <svg
+          viewBox="0 0 100 100"
+          className="absolute inset-0 w-full h-full pointer-events-none z-10"
+        >
+          <defs>
+            {/* Arrowhead marker pointing exactly in stroke tangent direction */}
+            <marker
+              id="stroke-arrowhead"
+              markerWidth="7"
+              markerHeight="7"
+              refX="5"
+              refY="3.5"
+              orient="auto"
+            >
+              <polygon points="0 1, 6 3.5, 0 6" fill="#047857" />
+            </marker>
+          </defs>
 
-        {/* Numbered Starting Point Badges (Where to start drawing) */}
-        {showStartPoints && (
-          <div className="absolute inset-0 pointer-events-none z-20">
-            {guideInfo.startPoints.map((pt, idx) => (
-              <div
-                key={idx}
-                className="absolute flex items-center justify-center"
-                style={{ left: `${pt.x}%`, top: `${pt.y}%`, transform: 'translate(-50%, -50%)' }}
-              >
-                <span className="relative flex h-6 w-6 items-center justify-center">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-6 w-6 bg-emerald-600 text-white font-bold text-[11px] items-center justify-center shadow-md">
-                    {pt.label}
-                  </span>
-                </span>
-              </div>
+          {/* 1. Exactly Centered Ghost Reference Character */}
+          {showGuide && (
+            <text
+              x="50"
+              y="57"
+              textAnchor="middle"
+              dominantBaseline="central"
+              className="fill-slate-200 font-japanese select-none font-normal"
+              style={{ fontSize: '78px' }}
+            >
+              {character}
+            </text>
+          )}
+
+          {/* 2. Directional Stroke Paths with Arrowheads & Numbered Starting Dots */}
+          {showArrows &&
+            strokes.map((stroke, idx) => (
+              <g key={idx}>
+                {/* Dashed directional vector line ending with an arrowhead */}
+                <path
+                  d={stroke.path}
+                  fill="none"
+                  stroke="#10B981"
+                  strokeWidth="2.8"
+                  strokeDasharray="4 3"
+                  markerEnd="url(#stroke-arrowhead)"
+                  opacity="0.9"
+                />
+
+                {/* Starting badge (Sitting precisely at stroke start point!) */}
+                <circle
+                  cx={stroke.start.x}
+                  cy={stroke.start.y}
+                  r="4.8"
+                  fill="#047857"
+                  stroke="#FFFFFF"
+                  strokeWidth="1.2"
+                />
+                <text
+                  x={stroke.start.x}
+                  y={stroke.start.y + 0.3}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fill="#FFFFFF"
+                  fontSize="5.5"
+                  fontWeight="bold"
+                >
+                  {idx + 1}
+                </text>
+              </g>
             ))}
-          </div>
-        )}
+        </svg>
 
         {/* HTML5 Touch / Pen / Mouse Canvas */}
         <canvas
@@ -212,7 +255,7 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
           onTouchStart={startDrawing}
           onTouchMove={draw}
           onTouchEnd={stopDrawing}
-          className="relative z-10 w-full h-full cursor-crosshair"
+          className="relative z-20 w-full h-full cursor-crosshair"
         />
       </div>
 
@@ -244,7 +287,7 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
         </div>
       )}
 
-      {/* Control Actions & Grade Button */}
+      {/* Action Buttons: Check Accuracy & Tools */}
       <div className="mt-3.5 flex flex-wrap items-center justify-center gap-2 w-full">
         <button
           type="button"
@@ -285,24 +328,30 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
 
         <button
           type="button"
-          onClick={() => setShowStartPoints(!showStartPoints)}
-          className={`px-3 py-2.5 rounded-2xl text-[11px] font-bold transition-colors ${
-            showStartPoints ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-stone-100 text-slate-500'
+          onClick={() => setShowArrows(!showArrows)}
+          className={`px-3 py-2.5 rounded-2xl text-[11px] font-bold transition-colors flex items-center gap-1 ${
+            showArrows
+              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+              : 'bg-stone-100 text-slate-500'
           }`}
-          title="Toggle starting point dots"
+          title="Toggle arrows and starting dots"
         >
-          ① Start Dots: {showStartPoints ? 'ON' : 'OFF'}
+          <Navigation size={12} className={showArrows ? 'text-emerald-600' : 'text-slate-400'} />
+          <span>Arrows: {showArrows ? 'ON' : 'OFF'}</span>
         </button>
       </div>
 
       {/* Step by step stroke instructions */}
       <div className="mt-4 w-full p-3.5 rounded-2xl bg-stone-50 border border-stone-200 text-left space-y-1.5">
         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-          How to write ({guideInfo.steps.length} strokes):
+          Stroke Order ({strokes.length} strokes):
         </span>
-        {guideInfo.steps.map((st, i) => (
-          <div key={i} className="text-xs text-slate-700 font-medium flex items-start gap-1.5">
-            <span className="leading-relaxed">{st}</span>
+        {strokes.map((st, i) => (
+          <div key={i} className="text-xs text-slate-700 font-medium flex items-center gap-2">
+            <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0">
+              {i + 1}
+            </span>
+            <span className="leading-relaxed">{st.direction}</span>
           </div>
         ))}
       </div>

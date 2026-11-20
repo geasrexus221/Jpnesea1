@@ -22,7 +22,7 @@ export function evaluateStrokeAccuracy(
     };
   }
 
-  const sampleSize = 80; // 80x80 grid for fast pixel analysis
+  const sampleSize = 100; // 100x100 grid for precise pixel analysis
 
   // 1. Offscreen canvas for user drawing
   const userEvalCanvas = document.createElement('canvas');
@@ -50,10 +50,11 @@ export function evaluateStrokeAccuracy(
   refCtx.fillRect(0, 0, sampleSize, sampleSize);
 
   refCtx.fillStyle = '#000000';
-  refCtx.font = `${Math.round(sampleSize * 0.72)}px "Klee One", "Noto Sans JP", sans-serif`;
+  // Use exact font and vertical centering matched with SVG (y = 57)
+  refCtx.font = `${Math.round(sampleSize * 0.76)}px "Klee One", "Noto Sans JP", sans-serif`;
   refCtx.textAlign = 'center';
   refCtx.textBaseline = 'middle';
-  refCtx.fillText(referenceChar, sampleSize / 2, sampleSize / 2 + 2);
+  refCtx.fillText(referenceChar, sampleSize / 2, sampleSize * 0.57);
 
   const refImgData = refCtx.getImageData(0, 0, sampleSize, sampleSize).data;
 
@@ -65,9 +66,9 @@ export function evaluateStrokeAccuracy(
 
   for (let i = 0; i < sampleSize * sampleSize; i++) {
     const idx = i * 4;
-    // Check if user drew here (alpha > 30)
-    const userHasPixel = userImgData[idx + 3] > 30;
-    // Check if reference has ink here (in refCtx, black is ink: brightness < 200)
+    // User drew here (alpha > 40)
+    const userHasPixel = userImgData[idx + 3] > 40;
+    // Reference has ink here (black is ink: brightness < 180)
     const refHasPixel = refImgData[idx] < 180;
 
     if (refHasPixel) refPixelCount++;
@@ -92,43 +93,43 @@ export function evaluateStrokeAccuracy(
 
   // Recall = how much of the target character did the user cover
   const recall = overlapCount / Math.max(1, refPixelCount);
-  // Precision = how much of what the user drew was actually on the character
-  const precision = overlapCount / Math.max(1, overlapCount + excessCount * 0.4);
+  // Precision = how accurately the user stayed inside the reference stroke boundaries
+  const precision = overlapCount / Math.max(1, overlapCount + excessCount * 0.35);
 
   // F1 harmonic mean scaled to 100
   const f1 = (2 * precision * recall) / Math.max(0.01, precision + recall);
   const rawScore = Math.round(f1 * 100);
 
-  // Generous normalization for hand-drawn touchscreen variations
-  const normalizedScore = Math.min(100, Math.max(0, Math.round(rawScore * 1.25)));
+  // Normalization for touchscreen fingertip thickness
+  const normalizedScore = Math.min(100, Math.max(0, Math.round(rawScore * 1.2)));
 
-  if (normalizedScore >= 70) {
+  if (normalizedScore >= 68) {
     return {
       score: normalizedScore,
       isCorrect: true,
       status: 'excellent',
-      feedback: '素晴らしい (Subarashii)! Excellent stroke accuracy and form!',
+      feedback: '素晴らしい (Subarashii)! Great stroke accuracy and balance!',
     };
-  } else if (normalizedScore >= 52) {
+  } else if (normalizedScore >= 50) {
     return {
       score: normalizedScore,
       isCorrect: true,
       status: 'good',
-      feedback: 'Good job! Character is clearly recognizable.',
+      feedback: 'Good job! Character is clearly recognizable and well-proportioned.',
     };
-  } else if (normalizedScore >= 35) {
+  } else if (normalizedScore >= 32) {
     return {
       score: normalizedScore,
       isCorrect: false,
       status: 'close',
-      feedback: 'Close! Check the starting position and curve angles.',
+      feedback: 'Close! Follow the green arrows to stay inside the stroke paths.',
     };
   } else {
     return {
       score: normalizedScore,
       isCorrect: false,
       status: 'poor',
-      feedback: 'Off target. Look at the starting guide ① and try following the ghost lines.',
+      feedback: 'Off target. Look at the numbered dots ①, ② and follow the directional arrows.',
     };
   }
 }
