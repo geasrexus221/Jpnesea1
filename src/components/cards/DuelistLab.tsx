@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CardInspector } from './CardInspector';
 import { TextSandbox } from './TextSandbox';
 import { TerminologyDictionary } from './TerminologyDictionary';
-import { Swords, Terminal, BookMarked, Sparkles } from 'lucide-react';
+import { Swords, Terminal, BookMarked } from 'lucide-react';
 
 type DuelistSubTab = 'inspector' | 'sandbox' | 'dictionary';
 
@@ -31,25 +31,9 @@ export const DuelistLab: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-4 pb-12 animate-fade-in max-w-3xl mx-auto">
-      {/* Duelist Header Banner */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-red-600 via-rose-700 to-amber-700 text-white shadow-md flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-1.5 text-xs font-bold text-amber-200">
-            <Sparkles size={14} className="fill-amber-300 text-amber-300" />
-            <span>Yu-Gi-Oh! OCG Japanese Grammar Lab</span>
-          </div>
-          <h1 className="text-lg sm:text-xl font-black tracking-tight mt-0.5">
-            遊戯王 カード研究所
-          </h1>
-          <p className="text-xs text-red-100 max-w-md mt-0.5">
-            Master Japanese syntax, particles, and Problem-Solving Card Text (PSCT) through official card effects.
-          </p>
-        </div>
-      </div>
-
-      {/* Sub-Tab Navigation Switcher */}
-      <div className="grid grid-cols-3 gap-2 p-1 bg-stone-200/70 rounded-2xl">
+    <div className="space-y-2.5 pb-10 animate-fade-in max-w-3xl mx-auto">
+      {/* Sub-Tab Navigation Switcher (Compact at the very top, banner removed!) */}
+      <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-200/70 rounded-xl">
         {subTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = subTab === tab.id;
@@ -58,18 +42,16 @@ export const DuelistLab: React.FC = () => {
               key={tab.id}
               type="button"
               onClick={() => setSubTab(tab.id)}
-              className={`py-2 px-2 rounded-xl text-center transition-all duration-150 active:scale-95 flex flex-col items-center justify-center ${
+              className={`py-1.5 px-1.5 rounded-lg text-center transition-all duration-150 active:scale-95 flex items-center justify-center gap-1.5 ${
                 isActive
-                  ? 'bg-white text-slate-900 shadow-sm font-bold'
+                  ? 'bg-white text-slate-900 shadow-xs font-bold'
                   : 'text-slate-600 hover:text-slate-900 font-medium'
               }`}
             >
-              <div className="flex items-center gap-1.5">
-                <Icon size={15} className={isActive ? 'text-japan-crimson' : 'text-slate-400'} />
-                <span className="text-xs leading-none">{tab.label}</span>
-              </div>
-              <span className="text-[10px] text-slate-400 font-japanese mt-0.5 hidden sm:inline-block">
-                {tab.sublabel}
+              <Icon size={14} className={isActive ? 'text-japan-crimson' : 'text-slate-400'} />
+              <span className="text-xs leading-none">{tab.label}</span>
+              <span className="text-[10px] text-slate-400 font-japanese hidden md:inline">
+                ({tab.sublabel})
               </span>
             </button>
           );
@@ -77,7 +59,7 @@ export const DuelistLab: React.FC = () => {
       </div>
 
       {/* Active Sub-Tab View */}
-      <div className="pt-1">
+      <div>
         {subTab === 'inspector' && <CardInspector />}
         {subTab === 'sandbox' && <TextSandbox />}
         {subTab === 'dictionary' && <TerminologyDictionary />}
