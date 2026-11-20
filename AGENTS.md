@@ -36,7 +36,7 @@ The application consists of 9 core interactive modules accessible from `MainMenu
 | 6 | **Quiz Arena & Survival** | `src/components/quiz/QuizArena.tsx`, `SurvivalQuiz.tsx` | Rapid-fire multiple choice drills, survival challenge with 3 lives, streak counters, and timer. |
 | 7 | **Street Signs Gallery** | `src/components/reader/SignsGallery.tsx` | Real-world authentic Japanese signs (Subway, Danger, Warnings, Shop labels) with interactive furigana toggles and vocabulary breakdowns. |
 | 8 | **Graded Reader** | `src/components/reader/GradedReader.tsx` | Authentic short stories with furigana toggle, per-sentence speech pronunciation, and comprehension checks. |
-| 9 | **Duelist Card Lab (遊戯王)** | `src/components/cards/DuelistLab.tsx` | Yu-Gi-Oh Official Card Game (OCG) Japanese grammar laboratory. Card Decrypter, Clause Breakdown, Full Text & Romaji Interlinear Reader, Terminology Dictionary, and Syntax Sandbox. |
+| 9 | **Duelist Card Lab (遊戯王)** | `src/components/cards/DuelistLab.tsx` | Yu-Gi-Oh Official Card Game (OCG) Japanese grammar laboratory. Card Decrypter, Clause Breakdown, Full Text & Romaji Interlinear Reader, Card Reading Quiz (通読クイズ), Terminology Dictionary, and Syntax Sandbox. |
 
 ---
 
@@ -74,6 +74,16 @@ The application consists of 9 core interactive modules accessible from `MainMenu
   3. Part of speech and syntax role classification (`particle`, `keyword`, `timing`, `verb`, `normal`).
   4. Morphological particle separation.
 - **Whenever you add new cards with new terms or kanji**, you **MUST** register those words in `VOCAB_DICT`.
+
+### Rule 5: Card Reading Quiz (カード通読クイズ)
+- Located in `src/components/cards/CardReadingQuiz.tsx` and `src/utils/cardQuizParser.ts`.
+- **Strict Vertical UI Hierarchy**:
+  1. **Top**: Full card text with ruby furigana and current character highlighted in a focus ring.
+  2. **Middle**: Large spotlight square displaying the current character enlarged with furigana on top (for kanji), character type badge, and audio click.
+  3. **Bottom**: 6 possible answer buttons in a 3x2 grid.
+- **Dynamic Distractor Engine**: Distractors are **NEVER hardcoded**! `generateDistractors()` dynamically generates 5 phonetic distractors + 1 correct answer = 6 shuffled options.
+- **Color Hint Switch**: Color-codes characters into Hiragana (Indigo), Katakana (Amber), and Kanji (Crimson with ruby furigana).
+- **Auto-Skipping**: Numbers, bullets (`①`, `②`, `●`), and punctuation marks (`。`, `、`, `：`) are automatically skipped so users test only genuine reading.
 
 ---
 
