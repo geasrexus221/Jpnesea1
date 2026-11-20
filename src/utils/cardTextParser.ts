@@ -2,28 +2,45 @@ import { ClauseType, ParsedClause, ParsedSentence } from '../types/yugioh';
 
 const RECOGNIZED_KEYWORDS = [
   '特殊召喚',
+  '通常召喚',
   '召喚',
   '破壊',
+  '墓地へ送る',
+  '墓地へ送り',
+  '捨てる',
+  '捨てて',
   '除外',
   '墓地',
   '手札',
   'デッキ',
+  'EXデッキ',
   'フィールド',
   '無効',
   'リリース',
   'ドロー',
   '対象',
+  '選んで',
   '守備表示',
   '攻撃表示',
+  '表示形式',
   '攻撃力',
   '守備力',
   '効果',
   '魔法',
   '罠',
   'モンスター',
+  '融合召喚',
+  '儀式召喚',
+  'シンクロ召喚',
+  'エクシーズ召喚',
+  'リンク召喚',
+  'ペンデュラム召喚',
+  'チューナー',
+  'リバース',
+  'ダメージステップ',
 ];
 
-const PARTICLES = ['を', 'に', 'へ', 'から', 'まで', 'として', 'しか', 'で'];
+const PARTICLES = ['として', 'につき', 'ごとに', 'より', 'のみ', 'を', 'に', 'へ', 'から', 'まで', 'しか', 'で', 'と'];
 
 export function parseCardText(rawText: string): ParsedSentence[] {
   if (!rawText.trim()) return [];

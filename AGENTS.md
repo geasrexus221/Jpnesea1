@@ -146,12 +146,26 @@ Verify that there are 0 TypeScript errors.
   - `は (ha) -> ぱ (pa), ぴ (pi), ぷ (pu), ぺ (pe), ぽ (po)`
 - **Location in App**: In `KanaChart.tsx`, users switch between tabs: `Gojuon (五十音)`, `Dakuten (濁点)`, and `Handakuten (半濁点)`.
 
-### Yu-Gi-Oh PSCT Grammar Structure
+### Yu-Gi-Oh PSCT Grammar Structure & Crucial Rulings
 - `[Activation Condition (条件)] : [Cost / Targeting (コスト・対象)] ; [Effect Resolution (効果処理)] 。`
 - **Condition Marker**: `〜時:` (When...), `〜場合:` (If...).
 - **Cost / Targeting Marker**: `〜を対象として発動できる。` (Targeting), `〜をリリースして発動できる。` (Tribute cost).
 - **Resolution**: Ends in action verbs like `破壊する` (destroy), `手札に加える` (add to hand), `特殊召喚する` (special summon).
-- **Hard Once Per Turn (HOPT)**: `このカード名の(1)(2)の効果はそれぞれ１ターンに１度しか使用できない。`
+- **The 4 PSCT Conjunctions**:
+  1. `〜し、〜する` ("...and if you do, ..."): Simultaneous timing; Event B requires Event A to succeed.
+  2. `〜その後、〜する` ("...and if you do, then..."): Sequential timing! Event B happens AFTER Event A. Causes optional "When... you can (〜時、できる)" triggers on Event A to **miss timing (タイミングを逃す)**.
+  3. `〜と同時に〜する` ("...and at the same time..."): Both events happen simultaneously; neither requires the other to succeed.
+  4. `〜または〜` ("...also / or..."): Alternative choices.
+- **Critical Rulings & Word Distinctions**:
+  - `墓地へ送る` (Send to GY) vs `捨てる` (Discard) vs `破壊する` (Destroy): Dropping from hand is "discarding" (triggers Dark World); "send to GY" triggers neither discard nor destroy conditions.
+  - `対象として` (Targets at activation) vs `選んで` (Chooses non-targeting at resolution, bypassing target immunity).
+  - `使用できない` (Cannot use - burns turn attempt even if activation is negated) vs `発動できない` (Cannot activate - can retry with another copy if activation is negated).
+- **Terminology Categories (`TermCategoryType`)**:
+  - `'particle'` (助詞)
+  - `'action'` (動詞・処理)
+  - `'psct'` (構文規則・タイミング)
+  - `'zone'` (場所・ゾーン)
+  - `'mechanic'` (召喚法・特殊分類: 融合, シンクロ, エクシーズ, リンク, ペンデュラム, チューナー, リバース)
 
 ---
 

@@ -49,13 +49,15 @@ export interface YugiohCard {
   grammarBreakdownHighlights: GrammarHighlight[];
 }
 
+export type TermCategoryType = 'action' | 'psct' | 'zone' | 'particle' | 'mechanic';
+
 export interface YugiohTerm {
   id: string;
   term: string;
   reading: string;
   romaji: string;
   english: string;
-  category: 'action' | 'psct' | 'zone' | 'particle';
+  category: TermCategoryType;
   description: string;
   cardExample: string;
   exampleMeaning: string;

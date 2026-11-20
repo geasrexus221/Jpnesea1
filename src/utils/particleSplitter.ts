@@ -59,6 +59,35 @@ export const VOCAB_DICT: Record<string, TokenDictionaryEntry> = {
   '密告': { text: '密告', romaji: 'mikkoku', english: 'accusation', furigana: 'みっこく', role: 'keyword' },
   '躯売り': { text: '躯売り', romaji: 'mukuro uri', english: 'corpse-selling', furigana: 'むくろうり', role: 'keyword' },
 
+  // Mechanics & Extra Deck
+  '融合': { text: '融合', romaji: 'yūgō', english: 'Fusion', furigana: 'ゆうごう', role: 'keyword' },
+  '融合召喚': { text: '融合召喚', romaji: 'yūgō shōkan', english: 'Fusion Summon', furigana: 'ゆうごうしょうかん', role: 'verb' },
+  '儀式': { text: '儀式', romaji: 'gishiki', english: 'Ritual', furigana: 'ぎしき', role: 'keyword' },
+  '儀式召喚': { text: '儀式召喚', romaji: 'gishiki shōkan', english: 'Ritual Summon', furigana: 'ぎしきしょうかん', role: 'verb' },
+  'シンクロ': { text: 'シンクロ', romaji: 'shinkuro', english: 'Synchro', role: 'keyword' },
+  'シンクロ召喚': { text: 'シンクロ召喚', romaji: 'shinkuro shōkan', english: 'Synchro Summon', furigana: 'しょうかん', role: 'verb' },
+  'S召喚': { text: 'S召喚', romaji: 'shinkuro shōkan', english: 'Synchro Summon', furigana: 'しょうかん', role: 'verb' },
+  'エクシーズ': { text: 'エクシーズ', romaji: 'ekushīzu', english: 'Xyz', role: 'keyword' },
+  'X召喚': { text: 'X召喚', romaji: 'ekushīzu shōkan', english: 'Xyz Summon', furigana: 'しょうかん', role: 'verb' },
+  'リンク': { text: 'リンク', romaji: 'rinku', english: 'Link', role: 'keyword' },
+  'リンク召喚': { text: 'リンク召喚', romaji: 'rinku shōkan', english: 'Link Summon', furigana: 'しょうかん', role: 'verb' },
+  'リンクマーカー': { text: 'リンクマーカー', romaji: 'rinku mākā', english: 'Link Marker', role: 'keyword' },
+  'ペンデュラム': { text: 'ペンデュラム', romaji: 'pendyuramu', english: 'Pendulum', role: 'keyword' },
+  'P召喚': { text: 'P召喚', romaji: 'pendyuramu shōkan', english: 'Pendulum Summon', furigana: 'しょうかん', role: 'verb' },
+  'Pスケール': { text: 'Pスケール', romaji: 'pendyuramu sukēru', english: 'Pendulum Scale', role: 'keyword' },
+  'Pゾーン': { text: 'Pゾーン', romaji: 'pendyuramu zōn', english: 'Pendulum Zone', role: 'keyword' },
+  'チューナー': { text: 'チューナー', romaji: 'chūnā', english: 'Tuner', role: 'keyword' },
+  'リバース': { text: 'リバース', romaji: 'ribāsu', english: 'Flip', role: 'keyword' },
+  'スペルスピード': { text: 'スペルスピード', romaji: 'superu supīdo', english: 'Spell Speed', role: 'keyword' },
+  'ダメージステップ': { text: 'ダメージステップ', romaji: 'damēji suteppu', english: 'Damage Step', role: 'timing' },
+  '表示形式': { text: '表示形式', romaji: 'hyōji keishiki', english: 'battle position', furigana: 'ひょうじけいしき', role: 'keyword' },
+  '元々': { text: '元々', romaji: 'motomoto', english: 'original', furigana: 'もともと', role: 'keyword' },
+  '元々の攻撃力': { text: '元々の攻撃力', romaji: 'motomoto no kōgekiryoku', english: 'original ATK', furigana: 'もともとのこうげきりょく', role: 'keyword' },
+  'コントロール': { text: 'コントロール', romaji: 'kontorōru', english: 'control', role: 'keyword' },
+  'ダメージ': { text: 'ダメージ', romaji: 'damēji', english: 'damage', role: 'keyword' },
+  'ライフ': { text: 'ライフ', romaji: 'raifu', english: 'Life Points (LP)', role: 'keyword' },
+  'LP': { text: 'LP', romaji: 'LP', english: 'Life Points', role: 'keyword' },
+
   // Phases & Timing
   'メインフェイズ': { text: 'メインフェイズ', romaji: 'mein feizu', english: 'Main Phase', role: 'timing' },
   'エンドフェイズ': { text: 'エンドフェイズ', romaji: 'endo feizu', english: 'End Phase', role: 'timing' },
@@ -100,6 +129,14 @@ export const VOCAB_DICT: Record<string, TokenDictionaryEntry> = {
   '含む': { text: '含む', romaji: 'fukumu', english: 'including', furigana: 'ふくむ', role: 'verb' },
   '重ねて': { text: '重ねて', romaji: 'kasanete', english: 'stack / overlay and', furigana: 'かさねて', role: 'verb' },
   '取り除いて': { text: '取り除いて', romaji: 'torinozoite', english: 'detach and', furigana: 'とりのぞいて', role: 'verb' },
+  '変更': { text: '変更', romaji: 'henkō', english: 'change', furigana: 'へんこう', role: 'verb' },
+  '回復': { text: '回復', romaji: 'kaifuku', english: 'recover / gain', furigana: 'かいふく', role: 'verb' },
+  '与える': { text: '与える', romaji: 'ataeru', english: 'inflict', furigana: 'あたえる', role: 'verb' },
+  '与え': { text: '与え', romaji: 'atae', english: 'inflict and', furigana: 'あたえ', role: 'verb' },
+  '得る': { text: '得る', romaji: 'eru', english: 'take / gain', furigana: 'える', role: 'verb' },
+  '受けない': { text: '受けない', romaji: 'ukenai', english: 'unaffected by', furigana: 'うけない', role: 'verb' },
+  '払う': { text: '払う', romaji: 'harau', english: 'pay', furigana: 'はらう', role: 'verb' },
+  '確認': { text: '確認', romaji: 'kakunin', english: 'verify / check', furigana: 'かくにん', role: 'verb' },
   '粉砕': { text: '粉砕', romaji: 'funsai', english: 'pulverize', furigana: 'ふんさい', role: 'verb' },
 
   // Auxiliary Verbs & Suffixes
@@ -110,8 +147,13 @@ export const VOCAB_DICT: Record<string, TokenDictionaryEntry> = {
   'できる': { text: 'できる', romaji: 'dekiru', english: 'can (Optional)', role: 'verb' },
   'できない': { text: 'できない', romaji: 'dekinai', english: 'cannot', role: 'verb' },
 
-  // Particles
+  // Particles & Connectors
   'として': { text: 'として', romaji: 'to shite', english: 'as [Role]', role: 'particle' },
+  'につき': { text: 'につき', romaji: 'ni tsuki', english: 'for each [Rate]', role: 'particle' },
+  'ごとに': { text: 'ごとに', romaji: 'gotoni', english: 'each time [Frequency]', role: 'particle' },
+  'より': { text: 'より', romaji: 'yori', english: 'more than [Comparison]', role: 'particle' },
+  'のみ': { text: 'のみ', romaji: 'nomi', english: 'only [Exclusivity]', role: 'particle' },
+  'と同時に': { text: 'と同時に', romaji: 'to dōji ni', english: 'at the same time as', furigana: 'どうじ', role: 'timing' },
   'から': { text: 'から', romaji: 'kara', english: 'from [Origin]', role: 'particle' },
   'まで': { text: 'まで', romaji: 'made', english: 'until / up to [Limit]', role: 'particle' },
   'しか': { text: 'しか', romaji: 'shika', english: 'only [Limitation]', role: 'particle' },
@@ -125,7 +167,7 @@ export const VOCAB_DICT: Record<string, TokenDictionaryEntry> = {
   'と': { text: 'と', romaji: 'to', english: 'and / with [Connector]', role: 'particle' },
 };
 
-const PARTICLES_ORDER = ['として', 'から', 'まで', 'しか', 'を', 'に', 'へ', 'の', 'が', 'は', 'で', 'と'];
+const PARTICLES_ORDER = ['として', 'につき', 'ごとに', 'から', 'まで', 'しか', 'より', 'のみ', 'を', 'に', 'へ', 'の', 'が', 'は', 'で', 'と'];
 const PREFIXES = ['その', 'この', 'あの', '自分', '相手', 'お互いの', 'お互い'];
 const VERB_SUFFIXES = ['できる', 'できない', 'する', 'した', 'して', 'し'];
 

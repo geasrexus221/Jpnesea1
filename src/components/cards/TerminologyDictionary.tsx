@@ -4,7 +4,7 @@ import { YugiohTerm } from '../../types/yugioh';
 import { Search, Volume2, BookOpen, Sparkles } from 'lucide-react';
 import { useSpeech } from '../../hooks/useSpeech';
 
-type TermCategory = 'all' | 'particle' | 'action' | 'psct' | 'zone';
+type TermCategory = 'all' | 'particle' | 'action' | 'psct' | 'zone' | 'mechanic';
 
 export const TerminologyDictionary: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -17,6 +17,7 @@ export const TerminologyDictionary: React.FC = () => {
     { id: 'action' as TermCategory, label: 'Actions (動詞)' },
     { id: 'psct' as TermCategory, label: 'PSCT Rules (文法)' },
     { id: 'zone' as TermCategory, label: 'Game Zones (場所)' },
+    { id: 'mechanic' as TermCategory, label: 'Summons & Mechanics (召喚)' },
   ];
 
   const filteredTerms = YUGIOH_TERMS.filter((term) => {
@@ -43,6 +44,8 @@ export const TerminologyDictionary: React.FC = () => {
         return 'bg-amber-50 text-amber-800 border-amber-200';
       case 'zone':
         return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'mechanic':
+        return 'bg-purple-50 text-purple-700 border-purple-200';
       default:
         return 'bg-stone-100 text-slate-700 border-stone-200';
     }
