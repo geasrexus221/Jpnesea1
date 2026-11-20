@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { AppHeader } from './components/layout/AppHeader';
-import { BottomNav, TabType } from './components/layout/BottomNav';
+import { TabType } from './components/layout/BottomNav';
 import { DesktopSidebar } from './components/layout/DesktopSidebar';
+import { MainMenuHub } from './components/home/MainMenuHub';
 import { CurriculumPath } from './components/learn/CurriculumPath';
 import { LessonModal } from './components/learn/LessonModal';
 import { KanaChart } from './components/chart/KanaChart';
@@ -15,7 +16,8 @@ import { LESSONS } from './data/lessons';
 import { Lesson } from './types';
 
 export function App() {
-  const [currentTab, setCurrentTab] = useState<TabType>('learn');
+  // Mobile defaults directly to 'menu' (the 3-row Main Menu Hub!)
+  const [currentTab, setCurrentTab] = useState<TabType>('menu');
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -29,12 +31,25 @@ export function App() {
     resetProgress,
   } = useProgress();
 
+  const tabTitles: Record<TabType, string> = {
+    menu: '日本語を読む',
+    learn: 'Curriculum Path',
+    chart: 'Kana Charts',
+    write: 'Writing Gym (書道)',
+    drills: 'Quiz Arena (試験)',
+    signs: 'Street Signs (看板)',
+    reader: 'Sentence Reader',
+  };
+
   return (
     <div className="min-h-screen bg-[#FDFBF7] flex flex-col font-sans">
-      {/* Top Navigation Bar */}
+      {/* Top Header Bar with dynamic [← Menu] back button on mobile when inside an activity */}
       <AppHeader
         streak={progress.streakDays}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        showBackButton={currentTab !== 'menu'}
+        onBackToMenu={() => setCurrentTab('menu')}
+        currentTabName={tabTitles[currentTab]}
       />
 
       {/* Main Responsive Body Container */}
@@ -47,8 +62,17 @@ export function App() {
           totalLessonsCount={LESSONS.length}
         />
 
-        {/* Content Area */}
-        <main className="flex-1 p-4 sm:p-6 md:p-8 pb-24 md:pb-12 max-w-4xl mx-auto w-full">
+        {/* Content Area (Full screen on mobile when inside an activity, zero bottom bar clutter) */}
+        <main className="flex-1 p-3 sm:p-6 md:p-8 pb-12 max-w-4xl mx-auto w-full">
+          {currentTab === 'menu' && (
+            <MainMenuHub
+              onSelectTab={(tab) => setCurrentTab(tab)}
+              completedLessonsCount={progress.completedLessons.length}
+              totalLessonsCount={LESSONS.length}
+              streakDays={progress.streakDays}
+            />
+          )}
+
           {currentTab === 'learn' && (
             <CurriculumPath
               completedLessons={progress.completedLessons}
@@ -77,9 +101,6 @@ export function App() {
           )}
         </main>
       </div>
-
-      {/* Mobile Bottom Navigation Bar */}
-      <BottomNav currentTab={currentTab} onChangeTab={setCurrentTab} />
 
       {/* Active Lesson Modal */}
       {activeLesson && (

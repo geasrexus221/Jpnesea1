@@ -1,5 +1,14 @@
 import React from 'react';
-import { BookOpen, Grid, Trophy, Compass, BookCheck, Sparkles, PenTool } from 'lucide-react';
+import {
+  LayoutGrid,
+  BookOpen,
+  Grid,
+  Trophy,
+  Compass,
+  BookCheck,
+  Sparkles,
+  PenTool,
+} from 'lucide-react';
 import { TabType } from './BottomNav';
 
 interface DesktopSidebarProps {
@@ -17,6 +26,12 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
 }) => {
   const menuItems = [
     {
+      id: 'menu' as TabType,
+      label: 'Main Menu (ホーム)',
+      sublabel: 'Overview & 3-row hub',
+      icon: LayoutGrid,
+    },
+    {
       id: 'learn' as TabType,
       label: 'Curriculum Path',
       sublabel: 'Step-by-step masterclass',
@@ -25,7 +40,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
     {
       id: 'chart' as TabType,
       label: 'Kana Charts',
-      sublabel: 'Hiragana & Katakana audio grid',
+      sublabel: '50-Sounds audio & drill',
       icon: Grid,
     },
     {
@@ -42,7 +57,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
     },
     {
       id: 'signs' as TabType,
-      label: 'Reading in the Wild',
+      label: 'Street Signs (看板)',
       sublabel: 'Real signs & combini labels',
       icon: Compass,
     },
@@ -54,7 +69,8 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
     },
   ];
 
-  const progressPercent = totalLessonsCount > 0 ? Math.round((completedLessonsCount / totalLessonsCount) * 100) : 0;
+  const progressPercent =
+    totalLessonsCount > 0 ? Math.round((completedLessonsCount / totalLessonsCount) * 100) : 0;
 
   return (
     <aside className="hidden md:flex flex-col w-64 lg:w-72 border-r border-stone-200/80 bg-white/70 backdrop-blur-md p-4 min-h-[calc(100vh-65px)] sticky top-[65px]">
@@ -71,7 +87,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
               key={item.id}
               type="button"
               onClick={() => onChangeTab(item.id)}
-              className={`w-full flex items-start gap-3.5 px-3.5 py-3 rounded-2xl transition-all text-left group ${
+              className={`w-full flex items-start gap-3.5 px-3.5 py-2.5 rounded-2xl transition-all text-left group ${
                 isActive
                   ? 'bg-red-50 text-japan-crimson font-semibold shadow-sm border border-red-100'
                   : 'text-slate-600 hover:bg-stone-100/70 hover:text-slate-900'
@@ -84,11 +100,11 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
                     : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-800'
                 }`}
               >
-                <Icon size={18} />
+                <Icon size={17} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium leading-tight">{item.label}</div>
-                <div className="text-xs text-slate-400 truncate mt-0.5">{item.sublabel}</div>
+                <div className="text-[11px] text-slate-400 truncate mt-0.5">{item.sublabel}</div>
               </div>
             </button>
           );
@@ -98,7 +114,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
       {/* Course Overall Progress Card */}
       <div className="mt-auto p-4 rounded-2xl bg-gradient-to-br from-stone-50 to-stone-100 border border-stone-200">
         <div className="flex items-center justify-between text-xs font-medium text-slate-600 mb-1.5">
-          <span className="flex items-center gap-1 text-slate-800">
+          <span className="flex items-center gap-1 text-slate-800 font-bold">
             <Sparkles size={14} className="text-amber-500" />
             Curriculum
           </span>
