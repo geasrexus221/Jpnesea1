@@ -43,6 +43,7 @@ export interface YugiohCard {
   atk?: number;
   def?: number;
   fullJapanese: string;
+  fullRomaji?: string;
   englishEffect: string;
   clauses: CardClause[];
   grammarBreakdownHighlights: GrammarHighlight[];
