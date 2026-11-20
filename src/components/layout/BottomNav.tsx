@@ -1,7 +1,7 @@
 import React from 'react';
 import { LayoutGrid, BookOpen, Grid, Trophy, Compass, BookCheck, PenTool } from 'lucide-react';
 
-export type TabType = 'menu' | 'learn' | 'chart' | 'write' | 'drills' | 'signs' | 'reader' | 'cards';
+export type TabType = 'menu' | 'learn' | 'chart' | 'write' | 'drills' | 'signs' | 'reader' | 'cards' | 'flashcards';
 
 interface BottomNavProps {
   currentTab: TabType;

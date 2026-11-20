@@ -10,6 +10,7 @@ import {
   Flame,
   ArrowRight,
   Swords,
+  Layers,
 } from 'lucide-react';
 import { TabType } from '../layout/BottomNav';
 
@@ -168,6 +169,40 @@ export const MainMenuHub: React.FC<MainMenuHubProps> = ({
             </button>
           );
         })}
+      </div>
+
+      {/* Featured Flashcard Studio Entry */}
+      <div className="pt-0.5">
+        <button
+          type="button"
+          onClick={() => onSelectTab('flashcards')}
+          className="w-full p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-indigo-950 via-slate-900 to-purple-950 border border-purple-500/30 text-white shadow-md transition-all active:scale-98 flex items-center justify-between group text-left"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-400 to-indigo-500 text-white flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform shrink-0">
+              <Layers size={20} />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-japanese text-[10px] text-purple-300 font-semibold">
+                  単語帳・フラッシュカード
+                </span>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-400/20 text-purple-200 border border-purple-400/30">
+                  SRS Memory
+                </span>
+              </div>
+              <div className="font-bold text-xs sm:text-sm text-white group-hover:text-purple-300 transition-colors">
+                Flashcard Studio (3D Decks)
+              </div>
+              <div className="text-[10px] sm:text-[11px] text-stone-300">
+                Active recall drill for Kana, N5 Kanji & Yu-Gi-Oh OCG vocabulary
+              </div>
+            </div>
+          </div>
+          <div className="p-1.5 sm:p-2 rounded-xl bg-white/10 group-hover:bg-white/20 transition-colors shrink-0">
+            <ArrowRight size={15} className="text-purple-300" />
+          </div>
+        </button>
       </div>
 
       {/* Featured Duelist Card Lab Entry */}

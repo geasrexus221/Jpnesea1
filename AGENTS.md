@@ -37,6 +37,7 @@ The application consists of 9 core interactive modules accessible from `MainMenu
 | 7 | **Street Signs Gallery** | `src/components/reader/SignsGallery.tsx` | Real-world authentic Japanese signs (Subway, Danger, Warnings, Shop labels) with interactive furigana toggles and vocabulary breakdowns. |
 | 8 | **Graded Reader** | `src/components/reader/GradedReader.tsx` | Authentic short stories with furigana toggle, per-sentence speech pronunciation, and comprehension checks. |
 | 9 | **Duelist Card Lab (遊戯王)** | `src/components/cards/DuelistLab.tsx` | Yu-Gi-Oh Official Card Game (OCG) Japanese grammar laboratory. Card Decrypter, Clause Breakdown, Full Text & Romaji Interlinear Reader, Card Reading Quiz (通読クイズ), Terminology Dictionary, and Syntax Sandbox. |
+| 10 | **Flashcard Studio (単語帳)** | `src/components/flashcards/FlashcardStudio.tsx` | Active recall & spaced repetition engine. 3D flip card animation, 3-button rating (`Again`, `Hard`, `Easy`), queue repeat on Again, dual study modes (JP→EN & EN→JP), and 5 decks (Hiragana, Katakana, N5 Kanji, Yu-Gi-Oh OCG, Tricky/Starred). |
 
 ---
 

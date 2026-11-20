@@ -11,6 +11,7 @@ import { QuizArena } from './components/quiz/QuizArena';
 import { SignsGallery } from './components/reader/SignsGallery';
 import { GradedReader } from './components/reader/GradedReader';
 import { DuelistLab } from './components/cards/DuelistLab';
+import { FlashcardStudio } from './components/flashcards/FlashcardStudio';
 import { SettingsModal } from './components/settings/SettingsModal';
 import { useProgress } from './hooks/useProgress';
 import { LESSONS } from './data/lessons';
@@ -41,6 +42,7 @@ export function App() {
     signs: 'Street Signs (看板)',
     reader: 'Sentence Reader',
     cards: 'Duelist Lab (遊戯王)',
+    flashcards: 'Flashcard Studio (単語帳)',
   };
 
   return (
@@ -104,6 +106,10 @@ export function App() {
 
           {currentTab === 'cards' && (
             <DuelistLab />
+          )}
+
+          {currentTab === 'flashcards' && (
+            <FlashcardStudio onBackToMenu={() => setCurrentTab('menu')} />
           )}
         </main>
       </div>

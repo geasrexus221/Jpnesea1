@@ -9,6 +9,7 @@ import {
   Sparkles,
   PenTool,
   Swords,
+  Layers,
 } from 'lucide-react';
 import { TabType } from './BottomNav';
 
@@ -73,6 +74,12 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
       label: 'Duelist Lab (遊戯王)',
       sublabel: 'OCG card PSCT & grammar',
       icon: Swords,
+    },
+    {
+      id: 'flashcards' as TabType,
+      label: 'Flashcard Studio (単語帳)',
+      sublabel: 'Active recall & 3D flip decks',
+      icon: Layers,
     },
   ];
 
