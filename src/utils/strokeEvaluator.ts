@@ -50,11 +50,11 @@ export function evaluateStrokeAccuracy(
   refCtx.fillRect(0, 0, sampleSize, sampleSize);
 
   refCtx.fillStyle = '#000000';
-  // Use exact font and vertical centering matched with SVG (y = 57)
-  refCtx.font = `${Math.round(sampleSize * 0.76)}px "Klee One", "Noto Sans JP", sans-serif`;
+  // Use exact font and vertical centering matched with SVG (y = 47)
+  refCtx.font = `${Math.round(sampleSize * 0.68)}px "Klee One", "Noto Sans JP", sans-serif`;
   refCtx.textAlign = 'center';
   refCtx.textBaseline = 'middle';
-  refCtx.fillText(referenceChar, sampleSize / 2, sampleSize * 0.57);
+  refCtx.fillText(referenceChar, sampleSize / 2, sampleSize * 0.47);
 
   const refImgData = refCtx.getImageData(0, 0, sampleSize, sampleSize).data;
 
@@ -122,14 +122,14 @@ export function evaluateStrokeAccuracy(
       score: normalizedScore,
       isCorrect: false,
       status: 'close',
-      feedback: 'Close! Follow the green arrows to stay inside the stroke paths.',
+      feedback: 'Close! Check character proportions inside the 4 quadrants.',
     };
   } else {
     return {
       score: normalizedScore,
       isCorrect: false,
       status: 'poor',
-      feedback: 'Off target. Look at the numbered dots ①, ② and follow the directional arrows.',
+      feedback: 'Off target. Look at the ghost guide and try again.',
     };
   }
 }

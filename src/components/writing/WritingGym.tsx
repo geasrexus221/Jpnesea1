@@ -8,15 +8,15 @@ import { AudioButton } from '../ui/AudioButton';
 import { StrokeRulesModal } from './StrokeRulesModal';
 import {
   BookOpen,
-  Sparkles,
   ChevronLeft,
   ChevronRight,
   Grid,
   X,
   PenTool,
-  CheckCircle2,
+  Shuffle,
 } from 'lucide-react';
 import { useSpeech } from '../../hooks/useSpeech';
+import { useHaptics } from '../../hooks/useHaptics';
 
 export const WritingGym: React.FC = () => {
   const [scriptType, setScriptType] = useState<'hiragana' | 'katakana' | 'kanji'>('hiragana');
@@ -25,6 +25,7 @@ export const WritingGym: React.FC = () => {
   const [isRulesModalOpen, setIsRulesModalOpen] = useState<boolean>(false);
 
   const { speak } = useSpeech();
+  const { triggerHaptic } = useHaptics();
 
   // Current dataset
   const dataset: (KanaItem | KanjiItem)[] =
@@ -66,6 +67,17 @@ export const WritingGym: React.FC = () => {
     handleSelectChar(newIdx);
   };
 
+  // Pick a random character from the current pool
+  const handleRandomChar = () => {
+    if (dataset.length <= 1) return;
+    let nextIdx = safeIndex;
+    while (nextIdx === safeIndex) {
+      nextIdx = Math.floor(Math.random() * dataset.length);
+    }
+    handleSelectChar(nextIdx);
+    triggerHaptic('light');
+  };
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-16">
       {/* Header & Rules Button */}
@@ -76,7 +88,7 @@ export const WritingGym: React.FC = () => {
             <span>Writing Gym (書道 Shodō)</span>
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Follow starting point ①, draw the strokes, and check accuracy.
+            Trace characters on the 4-quadrant manuscript grid and check accuracy.
           </p>
         </div>
 
@@ -111,7 +123,7 @@ export const WritingGym: React.FC = () => {
         ))}
       </div>
 
-      {/* Modern Carousel Controller (Replaces clunky vertical/overflowing lists) */}
+      {/* Carousel Controller with Shuffle / Random Button */}
       <div className="bg-white p-3 sm:p-4 rounded-3xl border border-stone-200 shadow-sm flex items-center justify-between gap-2 max-w-xl mx-auto">
         <button
           type="button"
@@ -137,9 +149,20 @@ export const WritingGym: React.FC = () => {
             </div>
             <div className="text-[10px] text-slate-400 flex items-center gap-1">
               <Grid size={11} />
-              <span>Tap to pick character ({safeIndex + 1}/{dataset.length})</span>
+              <span>Tap to pick ({safeIndex + 1}/{dataset.length})</span>
             </div>
           </div>
+        </button>
+
+        {/* Random Shuffle Button */}
+        <button
+          type="button"
+          onClick={handleRandomChar}
+          className="p-3 rounded-2xl bg-stone-50 hover:bg-red-50 text-slate-600 hover:text-japan-crimson active:scale-95 border border-stone-200/80 hover:border-red-200 transition-all flex items-center gap-1"
+          title="Pick random character"
+        >
+          <Shuffle size={18} />
+          <span className="hidden sm:inline text-xs font-bold">Random</span>
         </button>
 
         <button
@@ -194,7 +217,7 @@ export const WritingGym: React.FC = () => {
           )}
         </div>
 
-        {/* Right Side: The Touch Canvas Pad with Guidelines & Validation */}
+        {/* Right Side: The Touch Canvas Pad */}
         <div className="flex flex-col items-center">
           <StrokeCanvas
             character={getCharDisplay(currentChar)}
@@ -203,7 +226,7 @@ export const WritingGym: React.FC = () => {
         </div>
       </div>
 
-      {/* Clean Character Grid Selection Modal */}
+      {/* Character Grid Selection Modal */}
       {isPickerModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
           <div className="bg-[#FDFBF7] w-full max-w-lg rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[85vh]">

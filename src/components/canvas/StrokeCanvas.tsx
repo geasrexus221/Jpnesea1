@@ -162,13 +162,13 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
             : 'border-stone-200'
         }`}
       >
-        {/* Subtle Guidelines (Crosshairs dividing into 4 quadrants) */}
+        {/* Guidelines (Crosshairs dividing into 4 equal quadrants) */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="w-full h-1/2 border-b border-dashed border-red-200" />
           <div className="h-full w-1/2 border-r border-dashed border-red-200 absolute top-0 left-0" />
         </div>
 
-        {/* Minimalist SVG Ghost Reference Character (No clutter, perfectly centered) */}
+        {/* Minimalist Ghost Character - Perfectly centered in the 4 quadrants (y=47, font-size=68px) */}
         {showGuide && (
           <svg
             viewBox="0 0 100 100"
@@ -176,11 +176,11 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
           >
             <text
               x="50"
-              y="57"
+              y="47"
               textAnchor="middle"
               dominantBaseline="central"
               className="fill-slate-200 font-japanese select-none font-normal"
-              style={{ fontSize: '78px' }}
+              style={{ fontSize: '68px' }}
             >
               {character}
             </text>
