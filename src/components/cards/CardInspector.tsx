@@ -20,7 +20,7 @@ export const CardInspector: React.FC = () => {
   const [selectedCardId, setSelectedCardId] = useState<string>(YUGIOH_CARDS[0].id);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [activeView, setActiveView] = useState<'breakdown' | 'fulltext'>('breakdown');
-  const [copiedType, setCopiedType] = useState<'jp' | 'romaji' | null>(null);
+  const [copiedType, setCopiedType] = useState<'jp' | 'romaji' | 'all' | null>(null);
 
   const { speak } = useSpeech();
 
@@ -29,7 +29,7 @@ export const CardInspector: React.FC = () => {
   const fullRomajiText =
     currentCard.fullRomaji || currentCard.clauses.map((c) => c.romaji).join(' ');
 
-  const handleCopy = (text: string, type: 'jp' | 'romaji') => {
+  const handleCopy = (text: string, type: 'jp' | 'romaji' | 'all') => {
     navigator.clipboard.writeText(text);
     setCopiedType(type);
     setTimeout(() => setCopiedType(null), 2000);
@@ -199,78 +199,87 @@ export const CardInspector: React.FC = () => {
         </div>
       )}
 
-      {/* VIEW 2: FULL TEXT & ROMAJI */}
+      {/* VIEW 2: FULL TEXT & ROMAJI COMBINED */}
       {activeView === 'fulltext' && (
-        <div className="space-y-3.5 animate-fade-in">
-          {/* 1. Japanese Full Text Block */}
-          <div className="p-4 rounded-2xl bg-white border border-stone-200/90 shadow-xs space-y-2.5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-japan-crimson" />
-                  Japanese Full Text (公式全文)
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => speak(currentCard.fullJapanese)}
-                  className="p-1.5 rounded-lg text-slate-500 hover:text-japan-crimson hover:bg-red-50 transition-colors text-xs flex items-center gap-1"
-                  title="Listen to full text"
-                >
-                  <Volume2 size={15} />
-                  <span className="text-[11px] font-medium">Listen</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleCopy(currentCard.fullJapanese, 'jp')}
-                  className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-stone-100 transition-colors text-xs flex items-center gap-1"
-                  title="Copy Japanese text"
-                >
-                  {copiedType === 'jp' ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
-                  <span className="text-[11px]">{copiedType === 'jp' ? 'Copied' : 'Copy'}</span>
-                </button>
-              </div>
+        <div className="p-4 sm:p-5 rounded-3xl bg-white border border-stone-200/90 shadow-xs space-y-4 animate-fade-in">
+          {/* Header with Listen & Copy */}
+          <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-japan-crimson" />
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                Combined Full Text & Romaji (全文・ローマ字)
+              </span>
             </div>
 
-            <p className="font-japanese text-base sm:text-lg leading-relaxed text-slate-900 bg-stone-50/70 p-3 rounded-xl border border-stone-200/70">
-              {currentCard.fullJapanese}
-            </p>
-          </div>
-
-          {/* 2. Full Continuous Romaji Block */}
-          <div className="p-4 rounded-2xl bg-white border border-stone-200/90 shadow-xs space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-indigo-500" />
-                Full Romaji Reading (ローマ字読み)
-              </span>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => speak(currentCard.fullJapanese)}
+                className="px-2.5 py-1.5 rounded-xl bg-stone-100 hover:bg-red-50 hover:text-japan-crimson text-slate-700 transition-colors text-xs flex items-center gap-1.5 font-medium"
+                title="Listen to entire card effect"
+              >
+                <Volume2 size={15} />
+                <span>Listen Full</span>
+              </button>
 
               <button
                 type="button"
-                onClick={() => handleCopy(fullRomajiText, 'romaji')}
-                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-stone-100 transition-colors text-xs flex items-center gap-1"
-                title="Copy Romaji"
+                onClick={() => handleCopy(`${currentCard.fullJapanese}\n\n${fullRomajiText}`, 'all')}
+                className="px-2.5 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-slate-700 transition-colors text-xs flex items-center gap-1.5 font-medium"
+                title="Copy combined Japanese & Romaji"
               >
-                {copiedType === 'romaji' ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
-                <span className="text-[11px]">{copiedType === 'romaji' ? 'Copied' : 'Copy'}</span>
+                {copiedType === 'all' ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
+                <span>{copiedType === 'all' ? 'Copied' : 'Copy Both'}</span>
               </button>
             </div>
-
-            <p className="font-mono text-xs sm:text-sm leading-relaxed text-slate-700 bg-indigo-50/40 p-3 rounded-xl border border-indigo-100/70">
-              {fullRomajiText}
-            </p>
           </div>
 
-          {/* 3. Official English Translation Block */}
-          <div className="p-4 rounded-2xl bg-white border border-stone-200/90 shadow-xs space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              English Game Effect (英語翻訳)
-            </span>
-            <p className="text-xs sm:text-sm leading-relaxed text-slate-800 bg-emerald-50/30 p-3 rounded-xl border border-emerald-100/70 font-medium">
+          {/* Combined Sentence Pairs (Japanese text on top, Romaji directly underneath!) */}
+          <div className="space-y-3">
+            {currentCard.clauses.map((clause, cIdx) => (
+              <div
+                key={clause.id || cIdx}
+                className="p-3.5 rounded-2xl bg-stone-50/80 border border-stone-200/80 space-y-2 transition-all hover:bg-stone-50 hover:border-stone-300"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Clause / Sentence {cIdx + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => speak(clause.japanese)}
+                    className="text-slate-400 hover:text-japan-crimson transition-colors p-1 rounded-lg"
+                    title="Listen to this line"
+                  >
+                    <Volume2 size={14} />
+                  </button>
+                </div>
+
+                {/* Japanese Sentence */}
+                <div className="font-japanese font-bold text-base sm:text-lg text-slate-900 leading-relaxed">
+                  {clause.japanese}
+                </div>
+
+                {/* Combined Romaji Line (Directly Below!) */}
+                <div className="font-mono text-xs sm:text-sm text-indigo-700 font-medium leading-relaxed bg-indigo-50/60 p-2.5 rounded-xl border border-indigo-100/70">
+                  {clause.romaji}
+                </div>
+
+                {/* English Meaning Line */}
+                <div className="text-[11px] sm:text-xs text-slate-500 font-medium pt-0.5">
+                  {clause.english}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Complete Official TCG English Game Text */}
+          <div className="pt-3 border-t border-stone-100 space-y-1">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span>Official TCG English Translation</span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-800 leading-relaxed bg-emerald-50/30 p-2.5 rounded-xl border border-emerald-100/60 font-medium">
               {currentCard.englishEffect}
             </p>
           </div>
