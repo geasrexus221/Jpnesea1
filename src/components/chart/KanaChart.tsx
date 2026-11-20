@@ -3,7 +3,17 @@ import { HIRAGANA_DATA } from '../../data/hiragana';
 import { KATAKANA_DATA } from '../../data/katakana';
 import { KanaItem } from '../../types';
 import { AudioButton } from '../ui/AudioButton';
-import { Grid, Sparkles, CheckCircle2, XCircle, Volume2, ArrowRight } from 'lucide-react';
+import {
+  Grid,
+  Sparkles,
+  CheckCircle2,
+  XCircle,
+  Volume2,
+  ArrowRight,
+  SlidersHorizontal,
+  X,
+  Check,
+} from 'lucide-react';
 import { useSpeech } from '../../hooks/useSpeech';
 import { useHaptics } from '../../hooks/useHaptics';
 
@@ -14,10 +24,34 @@ interface KanaChartProps {
 
 type QuizDirection = 'romaji_to_kana' | 'kana_to_romaji' | 'mixed';
 
+interface RowOption {
+  id: string;
+  name: string;
+  hiraganaSample: string;
+  katakanaSample: string;
+}
+
+const ROW_CONFIG: RowOption[] = [
+  { id: 'a', name: 'A-Row (Vowels)', hiraganaSample: 'あ い う え お', katakanaSample: 'ア イ ウ エ オ' },
+  { id: 'ka', name: 'Ka-Row', hiraganaSample: 'か き く け こ', katakanaSample: 'カ キ ク ケ コ' },
+  { id: 'sa', name: 'Sa-Row', hiraganaSample: 'さ し す せ そ', katakanaSample: 'サ シ ス セ ソ' },
+  { id: 'ta', name: 'Ta-Row', hiraganaSample: 'た ち つ て と', katakanaSample: 'タ チ ツ テ ト' },
+  { id: 'na', name: 'Na-Row', hiraganaSample: 'な に ぬ ね の', katakanaSample: 'ナ ニ ヌ ネ ノ' },
+  { id: 'ha', name: 'Ha-Row', hiraganaSample: 'は ひ ふ へ ほ', katakanaSample: 'ハ ヒ フ ヘ ホ' },
+  { id: 'ma', name: 'Ma-Row', hiraganaSample: 'ま み む め も', katakanaSample: 'マ ミ ム メ モ' },
+  { id: 'ya', name: 'Ya-Row', hiraganaSample: 'や ゆ よ', katakanaSample: 'ヤ ユ ヨ' },
+  { id: 'ra', name: 'Ra-Row', hiraganaSample: 'ら り る れ ろ', katakanaSample: 'ラ リ ル レ ロ' },
+  { id: 'wa', name: 'Wa/N-Row', hiraganaSample: 'わ を ん', katakanaSample: 'ワ ヲ ン' },
+];
+
 export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCharacter }) => {
   const [viewMode, setViewMode] = useState<'grid' | 'quiz'>('grid');
   const [selectedType, setSelectedType] = useState<'hiragana' | 'katakana'>('hiragana');
   const [activeItem, setActiveItem] = useState<KanaItem | null>(null);
+
+  // Multi-select row filter state (defaults to all rows)
+  const [selectedRows, setSelectedRows] = useState<string[]>(ROW_CONFIG.map((r) => r.id));
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
 
   // Quiz State
   const [quizDirection, setQuizDirection] = useState<QuizDirection>('romaji_to_kana');
@@ -68,13 +102,23 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
     }
   };
 
-  // Generate a new Chart Quiz question
-  const generateQuestion = (type = selectedType, dir = quizDirection) => {
+  // Generate question using only the selected rows pool
+  const generateQuestion = (
+    type = selectedType,
+    dir = quizDirection,
+    activeRows = selectedRows
+  ) => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
 
-    const pool = type === 'hiragana' ? HIRAGANA_DATA.filter((i) => i.type === 'gojuon') : KATAKANA_DATA;
+    const allGojuon = type === 'hiragana' ? HIRAGANA_DATA.filter((i) => i.type === 'gojuon') : KATAKANA_DATA;
+    // Filter pool strictly to characters belonging to selected rows
+    let pool = allGojuon.filter((i) => activeRows.includes(i.row));
+    if (pool.length === 0) {
+      pool = allGojuon;
+    }
+
     const randomItem = pool[Math.floor(Math.random() * pool.length)];
 
     let isRomajiPrompt = true;
@@ -88,25 +132,26 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
     setCurrentPromptIsRomaji(isRomajiPrompt);
     setSelectedAnswerId(null);
 
-    // Pick 3 random distractors
-    const distractors = pool
-      .filter((i) => i.id !== randomItem.id)
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 3);
+    // Pick distractors preferably from the filtered pool
+    let distractorPool = pool.filter((i) => i.id !== randomItem.id);
+    if (distractorPool.length < 3) {
+      // Fallback to other characters if selected pool is very small (e.g. 1 row)
+      distractorPool = allGojuon.filter((i) => i.id !== randomItem.id);
+    }
 
+    const distractors = distractorPool.sort(() => Math.random() - 0.5).slice(0, 3);
     const shuffled = [randomItem, ...distractors].sort(() => Math.random() - 0.5);
     setQuizOptionItems(shuffled);
   };
 
-  // Initialize question when switching to quiz mode or changing script
   useEffect(() => {
     if (viewMode === 'quiz') {
-      generateQuestion(selectedType, quizDirection);
+      generateQuestion(selectedType, quizDirection, selectedRows);
     }
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [viewMode, selectedType, quizDirection]);
+  }, [viewMode, selectedType, quizDirection, selectedRows]);
 
   const handleQuizAnswer = (item: KanaItem) => {
     if (!targetItem || selectedAnswerId !== null) return;
@@ -123,15 +168,39 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
     } else {
       triggerHaptic('error');
       setStreak(0);
-      // Play sound of what the user mistakenly clicked so they can hear its real pronunciation!
       speak(item.char);
     }
 
-    // Auto-advance after 2.4s so user has time to learn the revealed spelling, or they can click Next directly
     timerRef.current = setTimeout(() => {
-      generateQuestion(selectedType, quizDirection);
+      generateQuestion(selectedType, quizDirection, selectedRows);
     }, 2400);
   };
+
+  // Row Filter Helpers
+  const toggleRow = (rowId: string) => {
+    triggerHaptic('light');
+    if (selectedRows.includes(rowId)) {
+      if (selectedRows.length === 1) return; // Keep at least 1 row selected
+      setSelectedRows(selectedRows.filter((r) => r !== rowId));
+    } else {
+      setSelectedRows([...selectedRows, rowId]);
+    }
+  };
+
+  const selectAllRows = () => {
+    triggerHaptic('light');
+    setSelectedRows(ROW_CONFIG.map((r) => r.id));
+  };
+
+  const selectOnlyVowels = () => {
+    triggerHaptic('light');
+    setSelectedRows(['a']);
+  };
+
+  // Get active characters count
+  const activeCharCount = (
+    selectedType === 'hiragana' ? HIRAGANA_DATA.filter((i) => i.type === 'gojuon') : KATAKANA_DATA
+  ).filter((i) => selectedRows.includes(i.row)).length;
 
   return (
     <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto pb-12">
@@ -149,7 +218,7 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
             <p className="text-[10px] sm:text-xs text-slate-500">
               {viewMode === 'grid'
                 ? '五十音図 — Tap any character for audio & mnemonics'
-                : 'Interactive drill with instant character & spelling reveals'}
+                : 'Customizable row drill with dual per-answer reveals'}
             </p>
           </div>
         </div>
@@ -323,54 +392,76 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
       )}
 
       {/* ======================================================== */}
-      {/* MODE B: CHART QUIZ WITH PER-ANSWER DUAL SPELLING REVEAL  */}
+      {/* MODE B: CHART QUIZ WITH POP-UP ROW FILTER & DUAL REVEALS */}
       {/* ======================================================== */}
       {viewMode === 'quiz' && targetItem && (
-        <div className="space-y-4 animate-fade-in max-w-md mx-auto">
-          {/* Quiz Direction Selector Bar */}
-          <div className="bg-white p-2 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-around text-xs font-bold">
-            <button
-              type="button"
-              onClick={() => setQuizDirection('romaji_to_kana')}
-              className={`px-3 py-1.5 rounded-xl transition-all ${
-                quizDirection === 'romaji_to_kana'
-                  ? 'bg-red-50 text-japan-crimson border border-red-200 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-800'
-              }`}
-            >
-              "a" ➔ [あ]
-            </button>
+        <div className="space-y-3 sm:space-y-4 animate-fade-in max-w-md mx-auto">
+          {/* Quiz Top Action Bar: Direction Switcher & Clean Pop-up Filter Button */}
+          <div className="bg-white p-2.5 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between gap-2">
+            {/* Direction Selector */}
+            <div className="flex p-0.5 bg-stone-100 rounded-xl text-xs font-bold flex-1">
+              <button
+                type="button"
+                onClick={() => setQuizDirection('romaji_to_kana')}
+                className={`flex-1 py-1 px-2 rounded-lg transition-all ${
+                  quizDirection === 'romaji_to_kana'
+                    ? 'bg-red-50 text-japan-crimson border border-red-200 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                a ➔ [あ]
+              </button>
+              <button
+                type="button"
+                onClick={() => setQuizDirection('kana_to_romaji')}
+                className={`flex-1 py-1 px-2 rounded-lg transition-all ${
+                  quizDirection === 'kana_to_romaji'
+                    ? 'bg-red-50 text-japan-crimson border border-red-200 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                [あ] ➔ a
+              </button>
+              <button
+                type="button"
+                onClick={() => setQuizDirection('mixed')}
+                className={`py-1 px-2.5 rounded-lg transition-all ${
+                  quizDirection === 'mixed'
+                    ? 'bg-red-50 text-japan-crimson border border-red-200 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                🔀 Mixed
+              </button>
+            </div>
 
+            {/* Pop-up Filter Settings Button (No scrollable clutter!) */}
             <button
               type="button"
-              onClick={() => setQuizDirection('kana_to_romaji')}
-              className={`px-3 py-1.5 rounded-xl transition-all ${
-                quizDirection === 'kana_to_romaji'
-                  ? 'bg-red-50 text-japan-crimson border border-red-200 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-800'
-              }`}
+              onClick={() => setIsFilterModalOpen(true)}
+              className="py-1.5 px-3 rounded-xl bg-stone-50 hover:bg-stone-100 text-slate-700 border border-stone-200 text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
+              title="Open Row Filter Settings"
             >
-              [あ] ➔ "a"
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setQuizDirection('mixed')}
-              className={`px-3 py-1.5 rounded-xl transition-all ${
-                quizDirection === 'mixed'
-                  ? 'bg-red-50 text-japan-crimson border border-red-200 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-800'
-              }`}
-            >
-              🔀 Mixed
+              <SlidersHorizontal size={13} className="text-japan-crimson" />
+              <span>
+                Rows ({selectedRows.length === ROW_CONFIG.length ? 'All' : `${selectedRows.length}`})
+              </span>
             </button>
           </div>
 
-          {/* Score & Streak Header */}
+          {/* Active Row Scope Indicator & Score Header */}
           <div className="flex items-center justify-between text-xs px-2 text-slate-500 font-bold">
-            <span>
-              Score: <strong className="text-slate-900">{score}</strong> / {totalAnswered}
-            </span>
+            <button
+              type="button"
+              onClick={() => setIsFilterModalOpen(true)}
+              className="text-slate-600 hover:text-japan-crimson text-[11px] underline flex items-center gap-1"
+            >
+              <span>
+                {selectedRows.length === ROW_CONFIG.length
+                  ? 'Practicing All Rows (46)'
+                  : `Testing: ${selectedRows.map((r) => r.toUpperCase()).join(', ')} (${activeCharCount} chars)`}
+              </span>
+            </button>
             <span className="flex items-center gap-1 text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
               🔥 Streak: {streak}
             </span>
@@ -407,7 +498,7 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
               </div>
             </div>
 
-            {/* 4 Answer Choice Buttons (WITH PER-ANSWER CHARACTER & SPELLING REVEAL) */}
+            {/* 4 Answer Choice Buttons (WITH PER-ANSWER REVEAL) */}
             <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto pt-1">
               {quizOptionItems.map((item) => {
                 const isChosen = selectedAnswerId === item.id;
@@ -437,7 +528,6 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
                     className={`h-20 sm:h-22 rounded-2xl border transition-all duration-200 active:scale-95 flex flex-col items-center justify-center relative p-2 ${btnStyle}`}
                   >
                     {!hasAnswered ? (
-                      /* Before answering: display only prompt-appropriate representation */
                       <span
                         className={
                           currentPromptIsRomaji
@@ -448,13 +538,10 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
                         {currentPromptIsRomaji ? item.char : item.romaji}
                       </span>
                     ) : (
-                      /* AFTER ANSWERING: DUAL PER-ANSWER REVEAL! */
                       <div className="flex flex-col items-center justify-center animate-fade-in">
-                        {/* Japanese Glyph */}
                         <span className="font-japanese text-2xl sm:text-3xl font-bold leading-tight">
                           {item.char}
                         </span>
-                        {/* Latin Spelling Reveal */}
                         <span
                           className={`text-xs font-black uppercase tracking-wider mt-0.5 px-2 py-0.2 rounded-full ${
                             isCorrect
@@ -469,7 +556,6 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
                       </div>
                     )}
 
-                    {/* Status icons */}
                     {hasAnswered && isCorrect && (
                       <CheckCircle2 size={16} className="absolute top-2 right-2 text-emerald-600" />
                     )}
@@ -486,7 +572,7 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
               {selectedAnswerId !== null ? (
                 <button
                   type="button"
-                  onClick={() => generateQuestion(selectedType, quizDirection)}
+                  onClick={() => generateQuestion(selectedType, quizDirection, selectedRows)}
                   className="py-2.5 px-6 rounded-2xl bg-japan-crimson hover:bg-red-700 text-white font-bold text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 mx-auto animate-scale-up"
                 >
                   <span>Next Question</span>
@@ -495,13 +581,118 @@ export const KanaChart: React.FC<KanaChartProps> = ({ romajiVisible, onSelectCha
               ) : (
                 <button
                   type="button"
-                  onClick={() => generateQuestion(selectedType, quizDirection)}
+                  onClick={() => generateQuestion(selectedType, quizDirection, selectedRows)}
                   className="text-xs font-semibold text-slate-400 hover:text-slate-700 py-1 transition-colors flex items-center justify-center gap-1 mx-auto"
                 >
                   <span>Skip Question</span>
                   <ArrowRight size={13} />
                 </button>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* POP-UP SETTINGS MODAL: MULTI-SELECT ROW FILTER           */}
+      {/* ======================================================== */}
+      {isFilterModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="bg-[#FDFBF7] w-full max-w-lg rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[85vh]">
+            {/* Modal Header */}
+            <div className="p-4 border-b border-stone-200 bg-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal size={18} className="text-japan-crimson" />
+                <div>
+                  <h3 className="font-bold text-sm text-slate-900">
+                    Row Filter Settings ({selectedType.toUpperCase()})
+                  </h3>
+                  <p className="text-[10px] text-slate-500">
+                    Toggle multiple rows to practice (e.g. Ka + Ha)
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsFilterModalOpen(false)}
+                className="p-1.5 rounded-full hover:bg-stone-100 text-slate-400 hover:text-slate-700"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Quick Action Presets */}
+            <div className="px-4 py-2.5 bg-stone-50 border-b border-stone-200 flex items-center justify-between text-xs font-bold">
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={selectAllRows}
+                  className="px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-slate-700 hover:bg-stone-100 transition-colors"
+                >
+                  Select All (10 Rows)
+                </button>
+                <button
+                  type="button"
+                  onClick={selectOnlyVowels}
+                  className="px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-slate-700 hover:bg-stone-100 transition-colors"
+                >
+                  Only Vowels (A-Row)
+                </button>
+              </div>
+              <span className="text-[11px] text-japan-crimson font-semibold">
+                {activeCharCount} characters selected
+              </span>
+            </div>
+
+            {/* Grid of Toggleable Rows (2 Columns) */}
+            <div className="p-4 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {ROW_CONFIG.map((row) => {
+                const isSelected = selectedRows.includes(row.id);
+                const sample = selectedType === 'hiragana' ? row.hiraganaSample : row.katakanaSample;
+
+                return (
+                  <button
+                    key={row.id}
+                    type="button"
+                    onClick={() => toggleRow(row.id)}
+                    className={`p-3 rounded-2xl border text-left transition-all active:scale-95 flex items-center justify-between ${
+                      isSelected
+                        ? 'bg-red-50 border-japan-crimson ring-2 ring-red-300 shadow-sm'
+                        : 'bg-white hover:bg-stone-50 border-stone-200 text-slate-600 opacity-60'
+                    }`}
+                  >
+                    <div>
+                      <div className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
+                        <span
+                          className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                            isSelected
+                              ? 'bg-japan-crimson text-white'
+                              : 'bg-stone-200 text-slate-500'
+                          }`}
+                        >
+                          {isSelected ? <Check size={10} /> : ''}
+                        </span>
+                        <span>{row.name}</span>
+                      </div>
+                      <div className="font-japanese text-sm font-semibold text-slate-600 mt-1 pl-5">
+                        {sample}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-stone-200 bg-white flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsFilterModalOpen(false)}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-japan-crimson hover:bg-red-700 text-white font-bold text-xs shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5"
+              >
+                <span>Apply & Start Practice ({activeCharCount} Chars)</span>
+                <ArrowRight size={14} />
+              </button>
             </div>
           </div>
         </div>
