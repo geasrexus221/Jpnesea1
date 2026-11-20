@@ -5,6 +5,7 @@ import { DesktopSidebar } from './components/layout/DesktopSidebar';
 import { CurriculumPath } from './components/learn/CurriculumPath';
 import { LessonModal } from './components/learn/LessonModal';
 import { KanaChart } from './components/chart/KanaChart';
+import { WritingGym } from './components/writing/WritingGym';
 import { ConfusingPairs } from './components/drills/ConfusingPairs';
 import { SignsGallery } from './components/reader/SignsGallery';
 import { GradedReader } from './components/reader/GradedReader';
@@ -57,6 +58,10 @@ export function App() {
 
           {currentTab === 'chart' && (
             <KanaChart romajiVisible={progress.romajiVisible} />
+          )}
+
+          {currentTab === 'write' && (
+            <WritingGym />
           )}
 
           {currentTab === 'drills' && (
