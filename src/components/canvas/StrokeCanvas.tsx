@@ -151,10 +151,10 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
   };
 
   return (
-    <div className={`relative flex flex-col items-center select-none w-full max-w-sm ${className}`}>
-      {/* Clean Genkō yōshi 4-quadrant manuscript drawing pad */}
+    <div className={`relative flex flex-col items-center select-none w-full ${className}`}>
+      {/* Mobile-compact Genkō yōshi manuscript pad (250px on mobile, 300px on desktop) */}
       <div
-        className={`relative w-72 h-72 sm:w-80 sm:h-80 bg-white rounded-3xl border-2 transition-all shadow-md overflow-hidden touch-none flex items-center justify-center ${
+        className={`relative w-[250px] h-[250px] sm:w-[290px] sm:h-[290px] bg-white rounded-3xl border-2 transition-all shadow-md overflow-hidden touch-none flex items-center justify-center ${
           evaluation?.isCorrect
             ? 'border-emerald-400 ring-4 ring-emerald-100 shadow-emerald-100'
             : evaluation && !evaluation.isCorrect
@@ -162,13 +162,13 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
             : 'border-stone-200'
         }`}
       >
-        {/* Guidelines (Crosshairs dividing into 4 equal quadrants) */}
+        {/* Subtle Guidelines (Crosshairs dividing into 4 equal quadrants) */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="w-full h-1/2 border-b border-dashed border-red-200" />
           <div className="h-full w-1/2 border-r border-dashed border-red-200 absolute top-0 left-0" />
         </div>
 
-        {/* Minimalist Ghost Character - Perfectly centered in the 4 quadrants (y=47, font-size=68px) */}
+        {/* Minimalist Ghost Character - Perfectly centered */}
         {showGuide && (
           <svg
             viewBox="0 0 100 100"
@@ -180,7 +180,7 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
               textAnchor="middle"
               dominantBaseline="central"
               className="fill-slate-200 font-japanese select-none font-normal"
-              style={{ fontSize: '68px' }}
+              style={{ fontSize: '66px' }}
             >
               {character}
             </text>
@@ -204,75 +204,69 @@ export const StrokeCanvas: React.FC<StrokeCanvasProps> = ({
       {/* Accuracy Feedback Banner */}
       {evaluation && (
         <div
-          className={`mt-3 w-full p-3 rounded-2xl border text-xs flex items-center justify-between gap-3 animate-fade-in ${
+          className={`mt-2 w-full max-w-[290px] p-2.5 rounded-2xl border text-xs flex items-center justify-between gap-2 animate-fade-in ${
             evaluation.isCorrect
               ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
               : 'bg-red-50 border-red-300 text-red-950'
           }`}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 min-w-0">
             {evaluation.isCorrect ? (
-              <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+              <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
             ) : (
-              <AlertCircle size={18} className="text-red-500 shrink-0" />
+              <AlertCircle size={16} className="text-red-500 shrink-0" />
             )}
-            <div>
-              <div className="font-bold flex items-center gap-1.5">
+            <div className="truncate">
+              <div className="font-bold flex items-center gap-1">
                 <span>{evaluation.isCorrect ? 'Correct!' : 'Needs Practice'}</span>
-                <span className="px-1.5 py-0.2 rounded-full bg-white/80 font-extrabold text-[10px]">
-                  {evaluation.score}% Accuracy
+                <span className="px-1 py-0.2 rounded bg-white/80 font-extrabold text-[10px]">
+                  {evaluation.score}%
                 </span>
               </div>
-              <p className="text-[11px] text-slate-600 mt-0.5">{evaluation.feedback}</p>
+              <p className="text-[10px] text-slate-600 truncate">{evaluation.feedback}</p>
             </div>
           </div>
         </div>
       )}
 
       {/* Action Buttons: Check Accuracy, Clear, and Ghost Guide Toggle */}
-      <div className="mt-3.5 flex items-center justify-center gap-2 w-full">
+      <div className="mt-2.5 flex items-center justify-center gap-2 w-full max-w-[290px]">
         <button
           type="button"
           onClick={handleCheckAccuracy}
           disabled={!hasDrawn}
-          className={`flex-1 py-2.5 px-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 ${
+          className={`flex-1 py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 ${
             hasDrawn
               ? 'bg-japan-crimson hover:bg-red-700 text-white shadow-red-200'
               : 'bg-stone-200 text-slate-400 cursor-not-allowed'
           }`}
         >
-          <Sparkles size={15} />
-          <span>Check My Drawing</span>
+          <Sparkles size={14} />
+          <span>Check Accuracy</span>
         </button>
 
         <button
           type="button"
           onClick={clearCanvas}
           disabled={!hasDrawn}
-          className="p-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 text-slate-700 disabled:opacity-40 transition-colors"
+          className="p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-slate-700 disabled:opacity-40 transition-colors"
           title="Clear pad"
           aria-label="Clear pad"
         >
-          <RotateCcw size={16} />
+          <RotateCcw size={15} />
         </button>
 
         <button
           type="button"
           onClick={() => setShowGuide(!showGuide)}
-          className={`px-3 py-2.5 rounded-2xl text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+          className={`px-2.5 py-2 rounded-xl text-[11px] font-semibold transition-colors flex items-center gap-1 ${
             showGuide ? 'bg-red-50 text-japan-crimson' : 'bg-stone-100 text-slate-500'
           }`}
           title={showGuide ? 'Hide Ghost Guide' : 'Show Ghost Guide'}
         >
-          {showGuide ? <EyeOff size={15} /> : <Eye size={15} />}
-          <span>{showGuide ? 'Guide: ON' : 'Guide: OFF'}</span>
+          {showGuide ? <EyeOff size={14} /> : <Eye size={14} />}
+          <span>{showGuide ? 'Guide' : 'Blank'}</span>
         </button>
-      </div>
-
-      <div className="mt-3 text-center">
-        <span className="text-xs text-slate-400">
-          Standard stroke count: <strong>{strokeCount} strokes</strong> • Trace with finger or mouse
-        </span>
       </div>
     </div>
   );
