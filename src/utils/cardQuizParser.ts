@@ -282,61 +282,119 @@ export function parseCardTextToQuizTokens(text: string): QuizToken[] {
 }
 
 // ============================================================================
-// DYNAMIC DISTRACTOR GENERATOR (Produces 6 Distinct Options)
+// DYNAMIC DISTRACTOR GENERATOR (Produces 6 Distinct Options with Identical Letter Count)
 // ============================================================================
-const ALL_BASIC_ROMAJI = [
-  'a', 'i', 'u', 'e', 'o',
-  'ka', 'ki', 'ku', 'ke', 'ko',
-  'sa', 'shi', 'su', 'se', 'so',
-  'ta', 'chi', 'tsu', 'te', 'to',
-  'na', 'ni', 'nu', 'ne', 'no',
-  'ha', 'hi', 'fu', 'he', 'ho',
-  'ma', 'mi', 'mu', 'me', 'mo',
-  'ya', 'yu', 'yo',
-  'ra', 'ri', 'ru', 're', 'ro',
-  'wa', 'wo', 'n',
-  'ga', 'gi', 'gu', 'ge', 'go',
-  'za', 'ji', 'zu', 'ze', 'zo',
-  'da', 'de', 'do',
-  'ba', 'bi', 'bu', 'be', 'bo',
-  'pa', 'pi', 'pu', 'pe', 'po',
-];
-
-const EXTENDED_ROMAJI = [
-  'kō', 'dō', 'mei', 'tān', 'shō', 'kan', 'kai', 'tai', 'ryo', 'tsū',
-  'jō', 'hatsu', 'wana', 'mahō', 'fuda', 'teki', 'son', 'zai', 'sai', 'dai',
-  'mizu', 'honō', 'kaze', 'yami', 'kami', 'kā', 'tā', 'dā', 'zoku', 'sei',
-];
+const CANDIDATES_BY_LENGTH: Record<number, string[]> = {
+  1: ['a', 'i', 'u', 'e', 'o', 'n'],
+  2: [
+    'ka', 'ki', 'ku', 'ke', 'ko',
+    'sa', 'su', 'se', 'so',
+    'ta', 'te', 'to',
+    'na', 'ni', 'nu', 'ne', 'no',
+    'ha', 'hi', 'fu', 'he', 'ho',
+    'ma', 'mi', 'mu', 'me', 'mo',
+    'ya', 'yu', 'yo',
+    'ra', 'ri', 'ru', 're', 'ro',
+    'wa', 'wo',
+    'ga', 'gi', 'gu', 'ge', 'go',
+    'za', 'ji', 'zu', 'ze', 'zo',
+    'da', 'de', 'do',
+    'ba', 'bi', 'bu', 'be', 'bo',
+    'pa', 'pi', 'pu', 'pe', 'po',
+    'kō', 'dō', 'tō', 'sō', 'hō', 'mō', 'rō', 'gō', 'zō', 'bō', 'pō',
+    'kā', 'tā', 'sā', 'hā', 'mā', 'rā', 'gā', 'dā', 'bā', 'pā',
+    'yū', 'fū', 'jū', 'rū', 'chū', 'shū', 'ryū', 'kyū', 'gyū', 'byū', 'pyū',
+  ],
+  3: [
+    'shi', 'chi', 'tsu',
+    'kya', 'kyu', 'kyo',
+    'sha', 'shu', 'sho',
+    'cha', 'chu', 'cho',
+    'nya', 'nyu', 'nyo',
+    'hya', 'hyu', 'hyo',
+    'mya', 'myu', 'myo',
+    'rya', 'ryu', 'ryo',
+    'gya', 'gyu', 'gyo',
+    'bya', 'byu', 'byo',
+    'pya', 'pyu', 'pyo',
+    'mei', 'kai', 'tai', 'sai', 'dai', 'bai', 'pai', 'mai', 'rai', 'gai', 'zai',
+    'kan', 'san', 'dan', 'ban', 'pan', 'man', 'ran', 'gan', 'zan', 'nan', 'tan', 'han',
+    'sen', 'ken', 'gen', 'den', 'ben', 'pen', 'men', 'ren', 'zen',
+    'kin', 'gin', 'rin', 'min', 'nin', 'bin', 'pin',
+    'hon', 'mon', 'ron', 'gon', 'bon', 'pon', 'son', 'ton', 'don', 'non', 'kon',
+    'kun', 'bun', 'pun', 'gun', 'jun', 'sun',
+    'tān', 'rān',
+  ],
+  4: [
+    'fuda', 'wana', 'mahō', 'teki', 'kami', 'kaze', 'mizu', 'yami', 'zoku',
+    'toku', 'koku', 'haku', 'geki', 'hoka', 'koto', 'kazu', 'demo', 'dake',
+    'kara', 'made', 'sono', 'kono', 'shiki', 'akai', 'aoi', 'kuro',
+    'shiro', 'hana', 'nami', 'sora', 'yama', 'kawa', 'mori', 'tomo', 'naka',
+    'ryok', 'suto', 'kura', 'shur',
+  ],
+  5: [
+    'hatsu', 'shiyō', 'hakai', 'jogai', 'mukō', 'bochi', 'dekki', 'aite',
+    'jibun', 'furī', 'setto', 'tōkun', 'dorō', 'sute', 'modos', 'tsūjō',
+    'hikari', 'ryūko',
+  ],
+  6: [
+    'shōkan', 'tefuda', 'rirīsu', 'funsai', 'sonzai', 'taishō', 'henkō',
+    'kaifuk', 'ataeru', 'kōgeki', 'shubir',
+  ],
+};
 
 export function generateDistractors(correctRomaji: string): string[] {
-  const pool = [...ALL_BASIC_ROMAJI, ...EXTENDED_ROMAJI];
+  const targetLen = correctRomaji.length;
+  const pool = (CANDIDATES_BY_LENGTH[targetLen] || []).filter((r) => r !== correctRomaji);
   const distractors = new Set<string>();
 
-  // Determine vowel ending if standard
-  const lastChar = correctRomaji.slice(-1);
-  const sameVowel = pool.filter((r) => r.endsWith(lastChar) && r !== correctRomaji);
+  // 1. Prioritize candidates that share ending vowel or letter
+  if (pool.length > 0) {
+    const lastChar = correctRomaji.slice(-1);
+    const sameVowel = pool.filter((r) => r.endsWith(lastChar));
+    for (const item of sameVowel) {
+      if (distractors.size >= 3) break;
+      distractors.add(item);
+    }
 
-  // 1. Prioritize up to 3 same-vowel candidates
-  for (let i = 0; i < sameVowel.length && distractors.size < 3; i++) {
-    const pick = sameVowel[Math.floor(Math.random() * sameVowel.length)];
-    if (pick && pick !== correctRomaji) distractors.add(pick);
-  }
+    // 2. Prioritize candidates that share starting consonant
+    if (correctRomaji.length >= 2) {
+      const firstChar = correctRomaji[0];
+      const sameConsonant = pool.filter((r) => r.startsWith(firstChar));
+      for (const item of sameConsonant) {
+        if (distractors.size >= 4) break;
+        distractors.add(item);
+      }
+    }
 
-  // 2. Prioritize same starting consonant if length >= 2
-  if (correctRomaji.length >= 2) {
-    const firstChar = correctRomaji[0];
-    const sameConsonant = pool.filter((r) => r.startsWith(firstChar) && r !== correctRomaji);
-    for (let i = 0; i < sameConsonant.length && distractors.size < 4; i++) {
-      const pick = sameConsonant[Math.floor(Math.random() * sameConsonant.length)];
-      if (pick && pick !== correctRomaji) distractors.add(pick);
+    // 3. Fill remaining from the exact same length pool
+    const shuffledPool = [...pool].sort(() => Math.random() - 0.5);
+    for (const item of shuffledPool) {
+      if (distractors.size >= 5) break;
+      distractors.add(item);
     }
   }
 
-  // 3. Fill remaining from general pool until we have 5 distractors
-  while (distractors.size < 5) {
-    const pick = pool[Math.floor(Math.random() * pool.length)];
-    if (pick && pick !== correctRomaji) {
-      distractors.add(pick);
+  // Fallback for rare lengths: generate synthetic candidates of identical length
+  let fallbackCounter = 0;
+  const vowels = ['a', 'i', 'u', 'e', 'o'];
+  const consonants = ['k', 's', 't', 'n', 'h', 'm', 'y', 'r', 'w', 'g', 'z', 'd', 'b', 'p'];
+
+  while (distractors.size < 5 && fallbackCounter < 20) {
+    fallbackCounter++;
+    // Mutate a letter in correctRomaji while preserving exact length
+    const chars = correctRomaji.split('');
+    const mutateIdx = fallbackCounter % chars.length;
+    if (vowels.includes(chars[mutateIdx])) {
+      chars[mutateIdx] = vowels[(vowels.indexOf(chars[mutateIdx]) + 1) % vowels.length];
+    } else if (consonants.includes(chars[mutateIdx])) {
+      chars[mutateIdx] = consonants[(consonants.indexOf(chars[mutateIdx]) + 1) % consonants.length];
+    } else {
+      chars[mutateIdx] = vowels[fallbackCounter % vowels.length];
+    }
+    const synthetic = chars.join('');
+    if (synthetic !== correctRomaji && synthetic.length === targetLen) {
+      distractors.add(synthetic);
     }
   }
 

@@ -9,7 +9,8 @@ import {
 import {
   Search,
   Volume2,
-  Sparkles,
+  VolumeX,
+  Languages,
   RotateCcw,
   CheckCircle2,
   Palette,
@@ -22,7 +23,11 @@ import confetti from 'canvas-confetti';
 export const CardReadingQuiz: React.FC = () => {
   const [selectedCardId, setSelectedCardId] = useState<string>(YUGIOH_CARDS[0].id);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [colorHintEnabled, setColorHintEnabled] = useState<boolean>(true); // Defaults to ON
+
+  // User preferences (All defaulted to FALSE as requested)
+  const [colorHintEnabled, setColorHintEnabled] = useState<boolean>(false); // Defaults to OFF
+  const [translationEnabled, setTranslationEnabled] = useState<boolean>(false); // Defaults to OFF
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(false); // Defaults to OFF
 
   // Card reference
   const currentCard = useMemo(
@@ -99,8 +104,10 @@ export const CardReadingQuiz: React.FC = () => {
       setTotalCorrect((prev) => prev + 1);
       setStreak((prev) => prev + 1);
 
-      // Pronounce audio immediately on correct guess!
-      speak(currentToken.char);
+      // Only pronounce audio if soundEnabled toggle is turned ON!
+      if (soundEnabled) {
+        speak(currentToken.char);
+      }
 
       // Advance after a brief pleasant pause
       setTimeout(() => {
@@ -173,39 +180,73 @@ export const CardReadingQuiz: React.FC = () => {
 
   return (
     <div className="space-y-3 max-w-2xl mx-auto animate-fade-in">
-      {/* 1. Header Control Strip: Card Picker & Color Hint Switch */}
-      <div className="flex items-center justify-between gap-2 p-2 sm:p-2.5 rounded-xl bg-white border border-stone-200/90 shadow-2xs">
+      {/* 1. Header Control Strip: Card Picker, Streak, Translation, Color Hint, Sound, Reset */}
+      <div className="flex items-center justify-between gap-1.5 p-2 sm:p-2.5 rounded-xl bg-white border border-stone-200/90 shadow-2xs">
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-2xs active:scale-95 transition-all truncate"
+          className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-2xs active:scale-95 transition-all truncate"
         >
           <Search size={12} className="text-amber-300 shrink-0" />
           <span className="truncate">{currentCard.nameJapanese}</span>
           <ChevronDown size={12} className="text-slate-400 shrink-0" />
         </button>
 
-        {/* Stats & Color Hint Toggle */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        {/* Toggles Strip */}
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           {/* Streak indicator */}
-          <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold">
+          <div className="flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold">
             <Flame size={12} className="text-amber-500 fill-amber-500" />
             <span>{streak}</span>
           </div>
 
-          {/* Color Hint Switch */}
+          {/* Translation Toggle (Default OFF) */}
+          <button
+            type="button"
+            onClick={() => setTranslationEnabled(!translationEnabled)}
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all active:scale-95 ${
+              translationEnabled
+                ? 'bg-blue-50 text-blue-700 border-blue-200 font-bold'
+                : 'bg-stone-100 text-slate-500 border-stone-200 hover:text-slate-800'
+            }`}
+            title="Toggle English Translation (Defaults to OFF)"
+          >
+            <Languages size={12} />
+            <span className="hidden sm:inline">English</span>
+          </button>
+
+          {/* Color Hint Switch (Default OFF) */}
           <button
             type="button"
             onClick={() => setColorHintEnabled(!colorHintEnabled)}
             className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all active:scale-95 ${
               colorHintEnabled
                 ? 'bg-rose-50 text-japan-crimson border-red-200 font-bold'
-                : 'bg-stone-100 text-slate-600 border-stone-200'
+                : 'bg-stone-100 text-slate-500 border-stone-200 hover:text-slate-800'
             }`}
-            title="Toggle character type coloring (Hiragana/Katakana/Kanji)"
+            title="Toggle character type coloring (Hiragana/Katakana/Kanji - Defaults to OFF)"
           >
             <Palette size={12} />
-            <span className="hidden sm:inline">Color Hint</span>
+            <span className="hidden sm:inline">Color</span>
+          </button>
+
+          {/* Sound Toggle (Default OFF) */}
+          <button
+            type="button"
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all active:scale-95 ${
+              soundEnabled
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200 font-bold'
+                : 'bg-stone-100 text-slate-500 border-stone-200 hover:text-slate-800'
+            }`}
+            title={soundEnabled ? 'Sound is ON (Tap to Mute)' : 'Sound is OFF (Tap to Unmute)'}
+          >
+            {soundEnabled ? (
+              <Volume2 size={12} className="text-emerald-600" />
+            ) : (
+              <VolumeX size={12} className="text-slate-400" />
+            )}
+            <span className="hidden sm:inline">Audio</span>
           </button>
 
           {/* Restart */}
@@ -215,7 +256,7 @@ export const CardReadingQuiz: React.FC = () => {
             className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-stone-100 transition-colors"
             title="Restart current card"
           >
-            <RotateCcw size={14} />
+            <RotateCcw size={13} />
           </button>
         </div>
       </div>
@@ -257,7 +298,7 @@ export const CardReadingQuiz: React.FC = () => {
       ) : (
         <>
           {/* 2. TOP: Full Card Text (Sentence Canvas with Spotlight Highlight) */}
-          <div className="p-3 sm:p-4 rounded-xl bg-white border border-stone-200/90 shadow-2xs space-y-1.5">
+          <div className="p-3 sm:p-4 rounded-xl bg-white border border-stone-200/90 shadow-2xs space-y-2">
             <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium">
               <span>Card Reading Context (本文)</span>
               <span>
@@ -297,28 +338,47 @@ export const CardReadingQuiz: React.FC = () => {
                 );
               })}
             </div>
+
+            {/* Optional English Translation Display (Toggled ON/OFF) */}
+            {translationEnabled && (
+              <div className="p-2.5 rounded-lg bg-blue-50/50 border border-blue-200/70 text-xs text-slate-700 leading-relaxed animate-fade-in">
+                <div className="text-[10px] font-bold text-blue-800 uppercase tracking-wider mb-0.5">
+                  Official English Text:
+                </div>
+                <p className="font-medium text-slate-800 text-[11px] sm:text-xs">
+                  {currentCard.englishEffect}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* 3. MIDDLE: Large Spotlight Character Square */}
           {currentToken && (
             <div className="flex flex-col items-center justify-center my-1">
               <div
-                onClick={() => speak(currentToken.char)}
+                onClick={() => {
+                  if (soundEnabled) speak(currentToken.char);
+                }}
                 className={`w-28 h-28 sm:w-36 sm:h-36 rounded-2xl border-2 shadow-sm flex flex-col items-center justify-center relative cursor-pointer group transition-all duration-200 hover:scale-105 active:scale-95 ${getSpotlightColorStyle(
                   currentToken
                 )}`}
-                title="Tap to hear pronunciation"
+                title={soundEnabled ? 'Tap to hear pronunciation' : 'Sound is OFF (Tap speaker to unmute)'}
               >
-                {/* Audio prompt button in corner */}
+                {/* Audio icon in corner (interactive) */}
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     speak(currentToken.char);
                   }}
-                  className="absolute top-2 right-2 p-1 rounded-full text-slate-400 group-hover:text-japan-crimson group-hover:bg-red-50 transition-colors"
+                  className="absolute top-2 right-2 p-1 rounded-full text-slate-400 hover:text-japan-crimson hover:bg-red-50 transition-colors"
+                  title="Play pronunciation"
                 >
-                  <Volume2 size={16} />
+                  {soundEnabled ? (
+                    <Volume2 size={16} className="text-emerald-600" />
+                  ) : (
+                    <VolumeX size={16} className="text-slate-400" />
+                  )}
                 </button>
 
                 {/* Furigana on top if Kanji */}
@@ -337,17 +397,19 @@ export const CardReadingQuiz: React.FC = () => {
                   {currentToken.char}
                 </span>
 
-                {/* Character Type Tag badge at bottom */}
-                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1.5">
-                  {currentToken.type === 'hiragana' && 'Hiragana (ひらがな)'}
-                  {currentToken.type === 'katakana' && 'Katakana (カタカナ)'}
-                  {currentToken.type === 'kanji' && 'Kanji (漢字)'}
-                </span>
+                {/* Character Type Tag badge at bottom - ONLY shown when colorHintEnabled is ON! */}
+                {colorHintEnabled && (
+                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1.5 animate-fade-in">
+                    {currentToken.type === 'hiragana' && 'Hiragana (ひらがな)'}
+                    {currentToken.type === 'katakana' && 'Katakana (カタカナ)'}
+                    {currentToken.type === 'kanji' && 'Kanji (漢字)'}
+                  </span>
+                )}
               </div>
             </div>
           )}
 
-          {/* 4. BOTTOM: 6 Possible Answer Buttons (3x2 Grid) */}
+          {/* 4. BOTTOM: 6 Possible Answer Buttons (3x2 Grid with identical letter counts) */}
           <div className="space-y-1.5">
             <div className="text-center text-[11px] font-medium text-slate-500">
               Guess the Romaji reading:
